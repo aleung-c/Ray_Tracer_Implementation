@@ -6,7 +6,7 @@
 /*   By: aleung-c <aleung-c@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/04/21 13:04:52 by aleung-c          #+#    #+#             */
-/*   Updated: 2015/04/28 17:01:37 by aleung-c         ###   ########.fr       */
+/*   Updated: 2015/10/05 16:14:05 by aleung-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,16 +17,25 @@
 # include <stdio.h> //
 # include <math.h>
 # include <mlx.h>
+# include "X.h"
 # define SCREEN_W 400
 # define SCREEN_H 400
 
-typedef struct s_pos
+typedef struct s_pos // struct dun point dans l'espace a trois coordonnees.
 {
 	double x;
 	double y;
 	double z;
 
 }				t_pos;
+
+typedef struct	s_sphere
+{
+	t_pos		centre; // x y z
+	double		diametre;
+	double		radius;
+
+}				t_sphere;
 
 typedef struct	s_rt 
 {
@@ -53,11 +62,7 @@ typedef struct	s_rt
 	double cam_angle_z; // pour rotation de la camera sur elle-meme.
 
 	// sphere
-	double sphere_x;
-	double sphere_y;
-	double sphere_z;
-	double sphere_diam;
-	double sphere_rad;
+	t_sphere sphere;
 
 	double dist_cam_screen;
 

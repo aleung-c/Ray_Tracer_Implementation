@@ -6,21 +6,22 @@
 /*   By: aleung-c <aleung-c@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/04/21 12:59:16 by aleung-c          #+#    #+#             */
-/*   Updated: 2015/05/08 10:52:42 by aleung-c         ###   ########.fr       */
+/*   Updated: 2015/10/01 09:25:50 by aleung-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #include "RTv1.h"
 
 int		key_press(int keycode, t_rt *rt)
 {
-	if (keycode == 65363)
-		rt->cam_x += 0.5;
-	else if (keycode == 65361)
+	if (keycode == 124) // right
+		rt->cam_x += 0.5; 
+	else if (keycode == 123) // left
 		rt->cam_x -= 0.5;
-	else if (keycode == 65362 || keycode == 119)
+	else if (keycode == 65362 || keycode == 126) // up
 		rt->cam_y += 0.5;
-	else if (keycode == 65364 || keycode == 115)
+	else if (keycode == 65364 || keycode == 125) // down
 		rt->cam_y -= 0.5;
 	else if (keycode == 65307)
 	{
@@ -98,7 +99,7 @@ void trace_sphere(t_rt *rt) // pour calcuer la sphere dans la scene
 	scan_y = 0;
 	i = 0;
 	dist = 0.0;
-	color = 0x000000; // color = black;
+	color = 0x000000; // base color = black;
 	while (scan_y < rt->screen_height) // pour chaque colonne.
 	{
 		while (scan_x < rt->screen_width) // pour chaque ligne de pixel.
@@ -110,26 +111,26 @@ void trace_sphere(t_rt *rt) // pour calcuer la sphere dans la scene
 
 			a = (vx * vx) + (vy * vy) + (vz * vz);
 
-			b = 2*vx*(rt->cam_x - rt->sphere_x) + 2*vy*(rt->cam_y - rt->sphere_y) + 2*vz*(rt->cam_z - rt->sphere_z);
+			b = 2 * vx * (rt->cam_x - rt->sphere.centre.x) + 2 * vy * (rt->cam_y - rt->sphere.centre.y) + 2 * vz *(rt->cam_z - rt->sphere.centre.z);
 
-			c = rt->sphere_x * rt->sphere_x + rt->sphere_y * rt->sphere_y + rt->sphere_z * rt->sphere_z + 
+			c = rt->sphere.centre.x * rt->sphere.centre.x + rt->sphere.centre.y * rt->sphere.centre.y + rt->sphere.centre.z * rt->sphere.centre.z + 
 				rt->cam_x * rt->cam_x + rt->cam_y * rt->cam_y + rt->cam_z * rt->cam_z
-				+ -2*(rt->sphere_x * rt->cam_x + rt->sphere_y * rt->cam_y + rt->sphere_z * rt->cam_z) 
-				- rt->sphere_rad * rt->sphere_rad;
+				+ -2*(rt->sphere.centre.x * rt->cam_x + rt->sphere.centre.y * rt->cam_y + rt->sphere.centre.z * rt->cam_z) 
+				- rt->sphere.diametre * rt->sphere.radius;
 
 			// regarder si touche une sphere en calculant le determinant;
-			det = b * b - 4*a*c;
+			det = b * b - 4 * a * c;
 			// printf("det abc = %f\n", det);
 			
 			// calculer la position touchée;
-			t = (-b - sqrt((b*b) - 4 * a * c)) / 2 * a;
-			sx = rt->cam_x + t*vx;
-			sy = rt->cam_y + t*vy;
-			sz = rt->cam_z + t*vz;
+			t = (-b - sqrt((b * b) - 4 * a * c)) / 2 * a;
+			sx = rt->cam_x + t * vx;
+			sy = rt->cam_y + t * vy;
+			sz = rt->cam_z + t * vz;
 			//printf("sx = %f, sy = %f, sz = %f \n", sx, sy , sz); 
-			s_vect.x = (sx - rt->sphere_x) / rt->sphere_rad;
-			s_vect.y = (sy - rt->sphere_y) / rt->sphere_rad;
-			s_vect.z = (sz - rt->sphere_z) / rt->sphere_rad;
+			s_vect.x = (sx - rt->sphere.centre.x) / rt->sphere.radius;
+			s_vect.y = (sy - rt->sphere.centre.y) / rt->sphere.radius;
+			s_vect.z = (sz - rt->sphere.centre.z) / rt->sphere.radius;
 			sum_vect = fabs(s_vect.x) + fabs(s_vect.y) + fabs(s_vect.z); // somme des vect, indique une distance comparée.
 			// printf("sum sphere vect = %f\n",  sum_vect);
 
@@ -240,7 +241,7 @@ void calculate_viewplane(t_rt *rt)
 	// printf("rt->vp_vectors[last] : %f x, %f y, %f z;\n", rt->vp_vectors[400 + 200 * 400].x, rt->vp_vectors[400 + 200 * 400].y, rt->vp_vectors[400 + 200 * 400].z);
 }
 
-void rotate_viewplane(t_rt *rt) // PAS FAIT, MARCHE PAS ...
+void rotate_viewplane(t_rt *rt) // Incomplet, non fonctionnel.
 {
 	int y;
 	int x;
@@ -296,33 +297,29 @@ void init_var(t_rt *rt) // Definir scene.
 	rt->dist_cam_screen = 1.0;
 
 	// positionning sphere //
-	rt->sphere_x = 1.5;
-	rt->sphere_y = 4.0;
-	rt->sphere_z = 1.0;
-	rt->sphere_diam = 2.0;
-	rt->sphere_rad = 2.0;
+	rt->sphere.centre.x = 1.5;
+	rt->sphere.centre.y = 4.0;
+	rt->sphere.centre.z = 1.0;
+	rt->sphere.diametre = 2.0;
+	rt->sphere.radius = 2.0;
 }
 
-void display_logs(t_rt *rt) // logs de debugs.
-{
-	mlx_string_put(rt->mlx, rt->win, 20, 810, 0xFFFFFF, "RTv1");
-}
 
 void init_mlx(t_rt *rt)
 {
 	if (!(rt->mlx = mlx_init()))
 		exit(0);
 	if (!(rt->win = mlx_new_window(rt->mlx, \
-	rt->screen_width, rt->screen_height + 100, "RTv1"))) // +100 pout petite zone en bas de l'ecran.
+	rt->screen_width, rt->screen_height, "RTv1")))
 		exit (0);
-	rt->imgv = mlx_new_image(rt->mlx, rt->screen_width, rt->screen_height); // pour debug/text zone
+	rt->imgv = mlx_new_image(rt->mlx, rt->screen_width, rt->screen_height);
 	rt->img = mlx_get_data_addr(rt->imgv, &rt->bpp, &rt->sizeline, &rt->endian);
 
-	display_logs(rt); // pas besoin ...
 	ft_trace_rt(rt);
 
 	mlx_expose_hook(rt->win, expose_hook, rt);
-	mlx_hook(rt->win, 2, (1L<<0), &key_press, rt); // ????? ne semble pas marcher.
+	//mlx_hook(rt->win, 2, (1L<<0), &key_press, rt); // ????? ne semble pas marcher.
+	mlx_hook(rt->win, KeyPress, KeyPressMask, key_press, rt);
 	mlx_loop_hook(rt->mlx, ft_trace_rt, rt);
 	mlx_loop(rt->mlx);
 	mlx_destroy_image(rt->mlx, rt->imgv);

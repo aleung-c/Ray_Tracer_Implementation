@@ -20,7 +20,7 @@ OBJ = $(SRC:.c=.o)
 
 LIB = ./libft/
 
-MLX = -L/usr/X11/lib -lmlx -framework AppKit -framework OpenGL
+MLX = -lmlx -framework OpenGL -framework AppKit
 
 CC = gcc -g -Wall -Werror -Wextra -Ofast 
 
