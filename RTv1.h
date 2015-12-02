@@ -18,8 +18,9 @@
 # include <math.h>
 # include <mlx.h>
 # include "X.h"
-# define SCREEN_W 400
-# define SCREEN_H 400
+# define SCREEN_W 720
+# define SCREEN_H 720
+# define TOTAL_PX SCREEN_W * SCREEN_H
 
 typedef struct s_pos // struct dun point dans l'espace a trois coordonnees.
 {
@@ -36,6 +37,13 @@ typedef struct	s_sphere
 	double		radius;
 
 }				t_sphere;
+
+typedef struct	s_plane
+{
+	t_pos		normale;
+	t_pos		point;
+
+}				t_plane;
 
 typedef struct	s_rt 
 {
@@ -61,8 +69,13 @@ typedef struct	s_rt
 	double cam_angle_x;
 	double cam_angle_z; // pour rotation de la camera sur elle-meme.
 
+	// OBJECTS
 	// sphere
 	t_sphere sphere;
+
+	// plane
+	t_plane plane;
+
 
 	double dist_cam_screen;
 
@@ -73,7 +86,7 @@ typedef struct	s_rt
 	t_pos vp_right_pos;
 
 	t_pos vp_pos; // pas utilise.
-	t_pos vp_vectors[SCREEN_H * SCREEN_W];
+	t_pos *vp_vectors; // total px.
 
 }	t_rt;
 

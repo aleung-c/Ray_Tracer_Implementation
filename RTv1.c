@@ -105,6 +105,7 @@ void trace_sphere(t_rt *rt) // pour calcuer la sphere dans la scene
 		while (scan_x < rt->screen_width) // pour chaque ligne de pixel.
 		{
 			// calculs preliminaires pour la sphere
+			// le vec actuel
 			vx = rt->vp_vectors[i].x;
 			vy = rt->vp_vectors[i].y;
 			vz = rt->vp_vectors[i].z;
@@ -148,9 +149,65 @@ void trace_sphere(t_rt *rt) // pour calcuer la sphere dans la scene
 	}
 }
 
+void trace_plane(t_rt *rt) {
+	int scan_x;
+	int scan_y;
+	int i;
+
+	float dist;
+	int color;
+
+	double	t;
+	double vx;
+	double vy;
+	double vz;
+	//float sum_vect;
+
+	scan_x = 0;
+	scan_y = 0;
+	i = 0;
+	dist = 0.0;
+	color = 0x000000; // base color = black;
+	while (scan_y < rt->screen_height) // pour chaque colonne.
+	{
+		while (scan_x < rt->screen_width) // pour chaque ligne de pixel.
+		{
+			// le vec actuel;
+			vx = rt->vp_vectors[i].x;
+			vy = rt->vp_vectors[i].y;
+			vz = rt->vp_vectors[i].z;
+
+			// calcul dist plane - point;
+			t = -(((rt->plane.normale.x * rt->cam_x) + (rt->plane.normale.y * rt->cam_y)
+			+ (rt->plane.normale.z * rt->cam_z) + rt->plane.point.z)
+			/ ((rt->plane.normale.x * vx) + (rt->plane.normale.y * vy)
+			+ (rt->plane.normale.z * vz)));
+
+			//sum_vect = fabs(s_vect.x) + fabs(s_vect.y) + fabs(s_vect.z); // somme des vect, indique une distance comparée.
+
+			//color = set_color(sum_vect);
+		
+			if (t >= 0.0) {
+				color = 0x00FF00;
+				pixel_put_to_image(rt, scan_x, scan_y, color);
+			}
+			else
+			{
+				
+
+			}
+			scan_x++;
+			i++;
+		}
+		scan_y++;
+		scan_x = 0;
+	}
+}
+
 int ft_trace_rt(t_rt *rt)
 {
 	trace_sphere(rt);
+	trace_plane(rt);
 	return (0);
 }
 
@@ -282,14 +339,17 @@ void rotate_viewplane(t_rt *rt) // Incomplet, non fonctionnel.
 
 void init_var(t_rt *rt) // Definir scene.
 {
+
 	// defining screen var //
-	rt->screen_width = SCREEN_W;
 	rt->screen_height = SCREEN_H;
+	rt->screen_width = SCREEN_W;
+
+	rt->vp_vectors = malloc(sizeof(t_pos) * (rt->screen_height * rt->screen_width)); // allocation viewplane vectors.
 
 	// defining cam var //
 	rt->cam_x = 1.0;
 	rt->cam_y = 1.0;
-	rt->cam_z = 1.0;
+	rt->cam_z = 3.0;
 	rt->cam_angle_x = 0.0;
 	rt->cam_angle_y = 0.0;
 	rt->cam_angle_z = 0.0;
@@ -302,8 +362,15 @@ void init_var(t_rt *rt) // Definir scene.
 	rt->sphere.centre.z = 1.0;
 	rt->sphere.diametre = 2.0;
 	rt->sphere.radius = 2.0;
-}
 
+	// positionning plane //
+	rt->plane.point.x = 0.0;
+	rt->plane.point.y = 3.0;
+	rt->plane.point.z = 0.0;
+	rt->plane.normale.x = 0.0;
+	rt->plane.normale.y = 0.0;
+	rt->plane.normale.z = 1.0;
+}
 
 void init_mlx(t_rt *rt)
 {
