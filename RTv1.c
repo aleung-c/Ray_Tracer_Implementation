@@ -16,13 +16,13 @@
 int		key_press(int keycode, t_rt *rt)
 {
 	if (keycode == 124) // right
-		rt->camera.pos.x += 0.5; 
+		rt->camera.camera_obj->pos.x += 0.5; 
 	else if (keycode == 123) // left
-		rt->camera.pos.x -= 0.5;
+		rt->camera.camera_obj->pos.x -= 0.5;
 	else if (keycode == 65362 || keycode == 126) // up
-		rt->camera.pos.y += 0.5;
+		rt->camera.camera_obj->pos.y += 0.5;
 	else if (keycode == 65364 || keycode == 125) // down
-		rt->camera.pos.y -= 0.5;
+		rt->camera.camera_obj->pos.y -= 0.5;
 	else if (keycode == 65307)
 	{
 		ft_putendl("Exit RTv1");
@@ -79,13 +79,25 @@ void trace_black_screen(t_rt *rt) // pour remplir lecran de noir. => protect ecr
 	}
 }
 
-void trace_objs(t_rt *rt) // pour calculer tous les objs
+void run_trough_objs(t_rt *rt, t_screen_vec *vp_vector) {
+	t_scene_object	*tmp;
+
+	tmp = rt->scene_objs;
+
+	// parcourir tous les objs.
+	while (tmp) {
+		if (tmp->type == SPHERE) {
+			sphere_check(vp_vector, tmp, rt->camera.camera_obj->pos, vp_vector->v);
+		}
+		tmp = tmp->next;
+	}
+}
+
+void raytrace_objs(t_rt *rt) // pour calculer tous les objs
 {
 	int scan_x;
 	int scan_y;
 	int i;
-	// vecteur actuel
-	t_vector3 vec_dir;
 
 	scan_x = 0;
 	scan_y = 0;
@@ -96,12 +108,10 @@ void trace_objs(t_rt *rt) // pour calculer tous les objs
 		while (scan_x < rt->screen_width) // pour chaque ligne de pixel.
 		{
 			// fait le check du vec actuel pour chaque obj de la scene en fonction de son type.
-				// vecteur actuel
-				vec_dir.x = rt->vp_vectors[i].v.x;
-				vec_dir.y = rt->vp_vectors[i].v.y;
-				vec_dir.z = rt->vp_vectors[i].v.z;
-				
-				sphere_check(rt, rt->camera.pos, vec_dir);
+				// vecteur actuel == rt->vp_vectors[i]
+				// pour chaque obj, regarder le type, puis lenvoyer pour calculer dans l'algo correspondant.
+				run_trough_objs(rt, &(rt->vp_vectors[i]));
+				// sphere_check(rt, rt->camera.pos, vec_dir); // a changé.
 			
 			
 			scan_x++;
@@ -112,6 +122,8 @@ void trace_objs(t_rt *rt) // pour calculer tous les objs
 	}
 
 }
+
+
 
 /*void trace_sphere(t_rt *rt) // pour calculer la sphere dans la scene
 {
@@ -186,6 +198,7 @@ void trace_objs(t_rt *rt) // pour calculer tous les objs
 	}
 }*/
 
+// a conserver pour les formules.
 /*void trace_plane(t_rt *rt) {
 	int scan_x;
 	int scan_y;
@@ -236,12 +249,58 @@ void trace_objs(t_rt *rt) // pour calculer tous les objs
 	}
 }*/
 
+void display_rt(t_rt *rt) // pb avc les distances ....
+{
+	int scan_x;
+	int scan_y;
+	int i;
+
+	scan_x = 0;
+	scan_y = 0;
+	i = 0;
+	//color = 0x000000; // base color = black;
+	while (scan_y < rt->screen_height) // pour chaque colonne.
+	{
+		while (scan_x < rt->screen_width) // pour chaque ligne de pixel.
+		{
+			if (rt->vp_vectors[i].touched_objs_list == NULL) {
+				// no touch, put black;
+				pixel_put_to_image(rt, scan_x, scan_y, 0x000000);
+
+			}
+			else {
+				t_scene_object	*closest_obj;
+				closest_obj = get_closest_object(&(rt->vp_vectors[i]));
+				pixel_put_to_image(rt, scan_x, scan_y, closest_obj->color);
+			}
+			// fait le check du vec actuel pour chaque obj de la scene en fonction de son type.
+				// vecteur actuel == rt->vp_vectors[i]
+				// pour chaque obj, regarder le type, puis lenvoyer pour calculer dans l'algo correspondant.
+				
+				// sphere_check(rt, rt->camera.pos, vec_dir); // a changé.
+			
+			
+			scan_x++;
+			i++;
+		}
+		scan_y++;
+		scan_x = 0;
+	}
+
+
+}
+
 int ft_trace_rt(t_rt *rt)
 {
 	trace_black_screen(rt);
 	// trace_sphere(rt);
 	// trace_plane(rt);
-	trace_objs(rt);
+	
+
+	raytrace_objs(rt);
+	display_rt(rt); // parcours les vec et affiche les touchs calculés.
+
+
 	return (0);
 }
 
@@ -277,21 +336,21 @@ void calculate_viewplane(t_rt *rt)
 
 	// calcul des points interessants du viewplane.
 	// vecteur point central = pos_cam - pos_cam avec y+dist to screen;
-	rt->vp_center_pos.x = rt->camera.pos.x;
-	rt->vp_center_pos.y = rt->camera.pos.y + rt->camera.dist_cam_screen;
-	rt->vp_center_pos.z = rt->camera.pos.z;
+	rt->vp_center_pos.x = rt->camera.camera_obj->pos.x;
+	rt->vp_center_pos.y = rt->camera.camera_obj->pos.y + rt->camera.camera_obj->dist_cam_screen;
+	rt->vp_center_pos.z = rt->camera.camera_obj->pos.z;
 
-	rt->vp_up_pos.x = rt->camera.pos.x;
-	rt->vp_up_pos.y = rt->camera.pos.y + rt->camera.dist_cam_screen;
-	rt->vp_up_pos.z = rt->camera.pos.z + 1.0;
+	rt->vp_up_pos.x = rt->camera.camera_obj->pos.x;
+	rt->vp_up_pos.y = rt->camera.camera_obj->pos.y + rt->camera.camera_obj->dist_cam_screen;
+	rt->vp_up_pos.z = rt->camera.camera_obj->pos.z + 1.0;
 
-	rt->vp_right_pos.x = rt->camera.pos.x + 1.0;
-	rt->vp_right_pos.y = rt->camera.pos.y + rt->camera.dist_cam_screen;
-	rt->vp_right_pos.z = rt->camera.pos.z;
+	rt->vp_right_pos.x = rt->camera.camera_obj->pos.x + 1.0;
+	rt->vp_right_pos.y = rt->camera.camera_obj->pos.y + rt->camera.camera_obj->dist_cam_screen;
+	rt->vp_right_pos.z = rt->camera.camera_obj->pos.z;
 
-	rt->vp_upleft_pos.x = rt->camera.pos.x - 1.0;
-	rt->vp_upleft_pos.y = rt->camera.pos.y + rt->camera.dist_cam_screen;
-	rt->vp_upleft_pos.z = rt->camera.pos.z + 1.0;
+	rt->vp_upleft_pos.x = rt->camera.camera_obj->pos.x - 1.0;
+	rt->vp_upleft_pos.y = rt->camera.camera_obj->pos.y + rt->camera.camera_obj->dist_cam_screen;
+	rt->vp_upleft_pos.z = rt->camera.camera_obj->pos.z + 1.0;
 
 	// CHECK LOGS //
 	// printf("rt->vp_center_pos : %f x, %f y, %f z;\n", rt->vp_center_pos.x, rt->vp_center_pos.y, rt->vp_center_pos.z);
@@ -299,9 +358,9 @@ void calculate_viewplane(t_rt *rt)
 	// printf("rt->vp_right_pos : %f x, %f y, %f z;\n", rt->vp_right_pos.x, rt->vp_right_pos.y, rt->vp_right_pos.z);
 	// printf("rt->vp_upleft_pos : %f x, %f y, %f z;\n", rt->vp_upleft_pos.x, rt->vp_upleft_pos.y, rt->vp_upleft_pos.z);
 
-	rt->vp_vectors[0].v.x = rt->vp_upleft_pos.x - rt->camera.pos.x;
-	rt->vp_vectors[0].v.y = rt->vp_upleft_pos.y - rt->camera.pos.y;
-	rt->vp_vectors[0].v.z = rt->vp_upleft_pos.z - rt->camera.pos.z;
+	rt->vp_vectors[0].v.x = rt->vp_upleft_pos.x - rt->camera.camera_obj->pos.x;
+	rt->vp_vectors[0].v.y = rt->vp_upleft_pos.y - rt->camera.camera_obj->pos.y;
+	rt->vp_vectors[0].v.z = rt->vp_upleft_pos.z - rt->camera.camera_obj->pos.z;
 	// printf("rt->vp_vectors[0] : %f x, %f y, %f z;\n", rt->vp_vectors[0].x, rt->vp_vectors[0].y, rt->vp_vectors[0].z);
 
 	// calcul des vectors pour chaque pixel de l'ecran.
@@ -318,9 +377,10 @@ void calculate_viewplane(t_rt *rt)
 		while (x < rt->screen_width)
 		{
 			xref += inc_x;
-			rt->vp_vectors[i].v.x = xref - rt->camera.pos.x;
+			rt->vp_vectors[i].v.x = xref - rt->camera.camera_obj->pos.x;
 			rt->vp_vectors[i].v.y = yref;
-			rt->vp_vectors[i].v.z = zref - rt->camera.pos.z;
+			rt->vp_vectors[i].v.z = zref - rt->camera.camera_obj->pos.z;
+			rt->vp_vectors[i].touched_objs_list = NULL;
 			i++;
 			x++;
 		}
@@ -345,8 +405,8 @@ void rotate_viewplane(t_rt *rt) // Incomplet, non fonctionnel.
 	{
 		while (x < rt->screen_width)
 		{
-			rt->vp_vectors[i].v.x = ((rt->vp_vectors[i].v.x * cos(rt->camera.euler_angles.x)) + (rt->vp_vectors[i].v.y - sin(rt->camera.euler_angles.y)) + 0);
-			rt->vp_vectors[i].v.y = ((rt->vp_vectors[i].v.x * sin(rt->camera.euler_angles.x)) + (rt->vp_vectors[i].v.y * cos(rt->camera.euler_angles.y)) + 0);
+			rt->vp_vectors[i].v.x = ((rt->vp_vectors[i].v.x * cos(rt->camera.camera_obj->euler_angles.x)) + (rt->vp_vectors[i].v.y - sin(rt->camera.camera_obj->euler_angles.y)) + 0);
+			rt->vp_vectors[i].v.y = ((rt->vp_vectors[i].v.x * sin(rt->camera.camera_obj->euler_angles.x)) + (rt->vp_vectors[i].v.y * cos(rt->camera.camera_obj->euler_angles.y)) + 0);
 			rt->vp_vectors[i].v.z = (0 + 0 + rt->vp_vectors[i].v.z * 1);
 
 			// //rotate x ;
@@ -382,23 +442,32 @@ void init_var(t_rt *rt) // Definir scene.
 	rt->vp_vectors = malloc(sizeof(t_screen_vec) * (rt->screen_height * rt->screen_width)); // allocation viewplane vectors.
 
 	// defining main cam var //
-	rt->camera.pos.x = 1.0;
-	rt->camera.pos.y = 1.0;
-	rt->camera.pos.z = 3.0;
-	rt->camera.euler_angles.x = 0.0;
-	rt->camera.euler_angles.y = 0.0;
-	rt->camera.euler_angles.z = 0.0;
+	rt->camera.type = CAM;
+	rt->camera.camera_obj = (t_camera *)malloc(sizeof(t_camera)); // alloue l'obj.
+	rt->camera.camera_obj->pos.x = 1.0;
+	rt->camera.camera_obj->pos.y = 1.0;
+	rt->camera.camera_obj->pos.z = 1.0;
+	rt->camera.camera_obj->euler_angles.x = 0.0;
+	rt->camera.camera_obj->euler_angles.y = 0.0;
+	rt->camera.camera_obj->euler_angles.z = 0.0;
 
-	rt->camera.dist_cam_screen = 1.0;
+	rt->camera.camera_obj->dist_cam_screen = 1.0;
 
 	// defining light values;
 	rt->light.pos.x = 0.0;
 
-	// // positionning sphere //
-	pos.x = 1.5;
-	pos.y = 4.0;
-	pos.z = 1.0;
-	add_sphere_to_scene(rt, pos, 2.0, 2.0);
+	// adding sphere //
+	//pos = set_vec3(0.5, 5.0, 1.0);
+	//add_sphere_to_scene(rt, pos, 2.0, 2.0, 0x006600); // sphere verte
+	// adding sphere //
+	pos = set_vec3(1.5, 8.0, 1.0);
+	add_sphere_to_scene(rt, pos, 2.0, 2.0, 0x0066FF); // sphere bleu
+	// adding sphere //
+	pos = set_vec3(-0.5, 10.0, 1.0);
+	add_sphere_to_scene(rt, pos, 2.0, 2.0, 0x660000); // sphere rouge
+
+
+
 }
 
 void init_mlx(t_rt *rt)
