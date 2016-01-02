@@ -12,6 +12,7 @@
 
 
 #include "RTv1.h"
+#include <stdio.h>
 
 int		key_press(int keycode, t_rt *rt)
 {
@@ -89,6 +90,9 @@ void run_trough_objs(t_rt *rt, t_screen_vec *vp_vector) {
 		if (tmp->type == SPHERE) {
 			sphere_check(vp_vector, tmp, rt->camera.camera_obj->pos, vp_vector->v);
 		}
+		else if (tmp->type == PLANE) {
+			plane_check(vp_vector, tmp, rt->camera.camera_obj->pos, vp_vector->v);
+		}
 		tmp = tmp->next;
 	}
 }
@@ -108,148 +112,18 @@ void raytrace_objs(t_rt *rt) // pour calculer tous les objs
 		while (scan_x < rt->screen_width) // pour chaque ligne de pixel.
 		{
 			// fait le check du vec actuel pour chaque obj de la scene en fonction de son type.
-				// vecteur actuel == rt->vp_vectors[i]
-				// pour chaque obj, regarder le type, puis lenvoyer pour calculer dans l'algo correspondant.
-				run_trough_objs(rt, &(rt->vp_vectors[i]));
-				// sphere_check(rt, rt->camera.pos, vec_dir); // a changé.
-			
-			
+			// vecteur actuel == rt->vp_vectors[i]
+			// pour chaque obj, regarder le type, puis lenvoyer pour calculer dans l'algo correspondant.
+			run_trough_objs(rt, &(rt->vp_vectors[i]));	
 			scan_x++;
 			i++;
 		}
 		scan_y++;
 		scan_x = 0;
 	}
-
 }
 
-
-
-/*void trace_sphere(t_rt *rt) // pour calculer la sphere dans la scene
-{
-	int scan_x;
-	int scan_y;
-	int i;
-
-	
-
-	scan_x = 0;
-	scan_y = 0;
-	i = 0;
-	color = 0x000000; // base color = black;
-	while (scan_y < rt->screen_height) // pour chaque colonne.
-	{
-		while (scan_x < rt->screen_width) // pour chaque ligne de pixel.
-		{
-			// calculs preliminaires pour la sphere
-			// le vec actuel
-			double vx;
-		double vy;
-		double vz;
-		
-		t_sphere_algo algo; // contient toutes les val pour calculer.
-
-		t_vector3 s_vect;
-		double sum_vect;
-		int color;
-
-
-		vx = rt->vp_vectors[i].x;
-		vy = rt->vp_vectors[i].y;
-		vz = rt->vp_vectors[i].z;
-
-		algo.a = (vx * vx) + (vy * vy) + (vz * vz);
-
-		algo.b = 2 * vx * (rt->cam_x - rt->sphere.centre.x) + 2 * vy * (rt->cam_y - rt->sphere.centre.y) + 2 * vz *(rt->cam_z - rt->sphere.centre.z);
-
-		algo.c = rt->sphere.centre.x * rt->sphere.centre.x + rt->sphere.centre.y * rt->sphere.centre.y + rt->sphere.centre.z * rt->sphere.centre.z + 
-			rt->cam_x * rt->cam_x + rt->cam_y * rt->cam_y + rt->cam_z * rt->cam_z
-			+ -2*(rt->sphere.centre.x * rt->cam_x + rt->sphere.centre.y * rt->cam_y + rt->sphere.centre.z * rt->cam_z) 
-			- rt->sphere.diametre * rt->sphere.radius;
-
-		// regarder si touche une sphere en calculant le determinant;
-		algo.det = algo.b * algo.b - 4 * algo.a * algo.c;
-		// printf("det abc = %f\n", det);
-
-		// calculer la position touchée;
-		algo.t = (-algo.b - sqrt((algo.b * algo.b) - 4 * algo.a * algo.c)) / 2 * algo.a;
-		algo.sx = rt->cam_x + algo.t * vx;
-		algo.sy = rt->cam_y + algo.t * vy;
-		algo.sz = rt->cam_z + algo.t * vz;
-		//printf("sx = %f, sy = %f, sz = %f \n", sx, sy , sz); 
-		s_vect.x = (sx - rt->sphere.centre.x) / rt->sphere.radius;
-		s_vect.y = (sy - rt->sphere.centre.y) / rt->sphere.radius;
-		s_vect.z = (sz - rt->sphere.centre.z) / rt->sphere.radius;
-		sum_vect = fabs(s_vect.x) + fabs(s_vect.y) + fabs(s_vect.z); // somme des vect, indique une distance comparée.
-		// printf("sum sphere vect = %f\n",  sum_vect);
-
-		color = set_color(sum_vect);
-		if (det >= 0.0)
-			pixel_put_to_image(rt, scan_x, scan_y, color);
-
-		
-			
-			
-			scan_x++;
-			i++;
-		}
-		scan_y++;
-		scan_x = 0;
-	}
-}*/
-
-// a conserver pour les formules.
-/*void trace_plane(t_rt *rt) {
-	int scan_x;
-	int scan_y;
-	int i;
-
-	float dist;
-	int color;
-
-	double	t;
-	double vx;
-	double vy;
-	double vz;
-	//float sum_vect;
-
-	scan_x = 0;
-	scan_y = 0;
-	i = 0;
-	dist = 0.0;
-	color = 0x000000; // base color = black;
-	while (scan_y < rt->screen_height) // pour chaque colonne.
-	{
-		while (scan_x < rt->screen_width) // pour chaque ligne de pixel.
-		{
-			// le vec actuel;
-			vx = rt->vp_vectors[i].x;
-			vy = rt->vp_vectors[i].y;
-			vz = rt->vp_vectors[i].z;
-
-			// calcul dist plane - point;
-			t = -(((rt->plane.normale.x * rt->cam_x) + (rt->plane.normale.y * rt->cam_y)
-			+ (rt->plane.normale.z * rt->cam_z) + rt->plane.point.z)
-			/ ((rt->plane.normale.x * vx) + (rt->plane.normale.y * vy)
-			+ (rt->plane.normale.z * vz)));
-
-			//sum_vect = fabs(s_vect.x) + fabs(s_vect.y) + fabs(s_vect.z); // somme des vect, indique une distance comparée.
-
-			//color = set_color(sum_vect);
-		
-			if (t >= 0.0) {
-				color = 0x00FF00;
-				pixel_put_to_image(rt, scan_x, scan_y, color);
-			}
-			scan_x++;
-			i++;
-		}
-		scan_y++;
-		scan_x = 0;
-	}
-}*/
-
-void display_rt(t_rt *rt) // pb avc les distances ....
+void display_rt(t_rt *rt)
 {
 	int scan_x;
 	int scan_y;
@@ -289,12 +163,10 @@ void display_rt(t_rt *rt) // pb avc les distances ....
 int ft_trace_rt(t_rt *rt)
 {
 	trace_black_screen(rt);
-	// trace_sphere(rt);
-	// trace_plane(rt);
 	
 
 	raytrace_objs(rt);
-	display_rt(rt); // parcours les vec et affiche les touchs calculés.
+	display_rt(rt); // parcours les vec et affiche les colors.
 
 
 	return (0);
@@ -430,7 +302,7 @@ void rotate_viewplane(t_rt *rt) // Incomplet, non fonctionnel.
 void init_var(t_rt *rt) // Definir scene.
 {
 	t_vector3 pos;
-
+	t_vector3 normale;
 	// defining screen var //
 	rt->screen_height = SCREEN_H;
 	rt->screen_width = SCREEN_W;
@@ -452,15 +324,50 @@ void init_var(t_rt *rt) // Definir scene.
 	// defining light values;
 	rt->light.pos.x = 0.0;
 
+	// --- SPHERES 
+	
 	// adding sphere //
 	//pos = set_vec3(0.5, 5.0, 1.0);
 	//add_sphere_to_scene(rt, pos, 2.0, 2.0, 0x006600); // sphere verte
+	
 	// adding sphere //
 	pos = set_vec3(1.5, 8.0, 1.0);
 	add_sphere_to_scene(rt, pos, 2.0, 2.0, 0x0066FF); // sphere bleu
+	
 	// adding sphere //
-	pos = set_vec3(-0.5, 8.5, 1.0);
-	add_sphere_to_scene(rt, pos, 2.0, 2.0, 0x660000); // sphere rouge
+	//pos = set_vec3(-0.5, 8.5, 1.0);
+	//add_sphere_to_scene(rt, pos, 2.0, 2.0, 0x660000); // sphere rouge
+
+	// --- PLANES // TODO : y semble inverse ........ 
+	
+	// adding plane //
+	normale = set_vec3(0.0, 0.0, 1.0);
+	pos = set_vec3(0.0, 0.0, 0.0);
+	add_plane_to_scene(rt, pos, normale, 0x669999);
+	
+	// adding plane //
+	//normale = set_vec3(1.0, 0.0, 0.0);
+	//pos = set_vec3(0.0, 0.0, 0.0);
+	//add_plane_to_scene(rt, pos, normale, 0x6699FF);
+
+	// adding plane //
+	normale = set_vec3(0.0, 1.0, 0.0);
+	pos = set_vec3(0.0, -8.0, 0.0);
+	add_plane_to_scene(rt, pos, normale, 0x663366);
+
+
+	// DEBUG
+	t_scene_object *tmp;
+	int i;
+
+	i = 0;
+	tmp = rt->scene_objs;
+	while (tmp) {
+		i++;
+		tmp = tmp->next;
+	}
+	printf("Scene :\n");
+	printf("Nombre d'objets : %d \n", i);
 }
 
 void init_mlx(t_rt *rt)
@@ -486,7 +393,7 @@ void init_mlx(t_rt *rt)
 void RTv1()
 {
 	t_rt rt;
-	rt.scene_objs = NULL; // init list chainee dobjs.
+	rt.scene_objs = NULL; // init list chainee d'objs.
 	init_var(&rt);
 	calculate_viewplane(&rt);
 	//rotate_viewplane(&rt); // FONCTIONNE PAS ....

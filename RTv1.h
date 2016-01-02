@@ -77,7 +77,7 @@ typedef	struct				s_sphere_algo {
 	double					dist;
 
 	// point from origin to t.
-	t_vector3				svec;
+	t_vector3				tpoint;
 
 }							t_sphere_algo;
 
@@ -87,6 +87,11 @@ typedef struct				s_plane
 	t_vector3				point;
 
 }							t_plane;
+
+typedef	struct				s_plane_algo {
+	double					t;
+	t_vector3				tpoint;
+}							t_plane_algo;
 
 typedef struct				s_cylinder {
 
@@ -165,9 +170,18 @@ typedef struct				s_rt
 // protos
 void						add_sphere_to_scene(t_rt *rt, t_vector3 centre, double diametre, double radius, int color);
 void						sphere_check(t_screen_vec *vp_vec, t_scene_object *obj, t_vector3 origine, t_vector3 vec_dir);
+void						algo_touching_sphere(t_sphere_algo *algo, t_scene_object *obj,
+								t_vector3 origine, t_vector3 vec_dir);
+void						algo_sphere_touched(t_sphere_algo *algo, t_vector3 origine, t_vector3 vec_dir);
+
+void						add_plane_to_scene(t_rt *rt, t_vector3 point, t_vector3 normale, int color);
+void						plane_check(t_screen_vec *vp_vec, t_scene_object *obj, t_vector3 origine,
+								t_vector3 vec_dir);
+
 
 void						add_touch_to_vp_vec(t_screen_vec *vp_vec, t_scene_object *obj, t_vector3 origine, t_vector3 touch_point);
 t_scene_object				*get_closest_object(t_screen_vec *vp_vec);
+
 
 // utils
 // utils_vec.c

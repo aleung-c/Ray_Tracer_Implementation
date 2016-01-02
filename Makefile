@@ -14,8 +14,9 @@ NAME = RTv1
 
 HEADER = RTv1.h
 
-SRC = RTv1.c sphere_check.c add_obj_to_scene.c utils_vec.c utils_angles.c \
-utils_objects.c vp_vec_touch.c
+SRC = RTv1.c sphere_check.c plane_check.c add_obj_to_scene.c utils_vec.c \
+utils_angles.c \
+utils_objects.c vp_vec_touch.c 
 
 OBJ = $(SRC:.c=.o)
 
