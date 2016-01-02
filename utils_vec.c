@@ -31,6 +31,17 @@ t_vector3 vec_dir(t_vector3 origine, t_vector3 destination) {
 	return (distance);
 }
 
+t_vector3 vec_dir_distance_normalized(t_vector3 origine, t_vector3 destination) {
+	// return un vec de distance normalisé;
+	t_vector3		ret;
+
+	ret.x = destination.x - origine.x;
+	ret.y = destination.y - origine.y;
+	ret.z = destination.z - origine.z;
+	ret = normalize_vector(ret);
+	return (ret);
+}
+
 double distance(t_vector3 origine, t_vector3 destination) {
 	// return une val de distance pour comparaison;
 	double		ret;

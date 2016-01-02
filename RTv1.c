@@ -266,28 +266,24 @@ void display_rt(t_rt *rt) // pb avc les distances ....
 			if (rt->vp_vectors[i].touched_objs_list == NULL) {
 				// no touch, put black;
 				pixel_put_to_image(rt, scan_x, scan_y, 0x000000);
-
 			}
 			else {
-				t_scene_object	*closest_obj;
-				closest_obj = get_closest_object(&(rt->vp_vectors[i]));
-				pixel_put_to_image(rt, scan_x, scan_y, closest_obj->color);
+				//t_scene_object	*closest_obj;
+				//closest_obj = get_closest_object(&(rt->vp_vectors[i]));
+				//pixel_put_to_image(rt, scan_x, scan_y, closest_obj->color);
+				pixel_put_to_image(rt, scan_x, scan_y, rt->vp_vectors[i].touched_objs_list->color);
 			}
 			// fait le check du vec actuel pour chaque obj de la scene en fonction de son type.
-				// vecteur actuel == rt->vp_vectors[i]
-				// pour chaque obj, regarder le type, puis lenvoyer pour calculer dans l'algo correspondant.
-				
-				// sphere_check(rt, rt->camera.pos, vec_dir); // a changé.
+			// vecteur actuel == rt->vp_vectors[i]
+			// pour chaque obj, regarder le type, puis lenvoyer pour calculer dans l'algo correspondant.
 			
-			
+			// sphere_check(rt, rt->camera.pos, vec_dir); // a changé.
 			scan_x++;
 			i++;
 		}
 		scan_y++;
 		scan_x = 0;
 	}
-
-
 }
 
 int ft_trace_rt(t_rt *rt)
@@ -463,7 +459,7 @@ void init_var(t_rt *rt) // Definir scene.
 	pos = set_vec3(1.5, 8.0, 1.0);
 	add_sphere_to_scene(rt, pos, 2.0, 2.0, 0x0066FF); // sphere bleu
 	// adding sphere //
-	pos = set_vec3(-0.5, 10.0, 1.0);
+	pos = set_vec3(-0.5, 8.5, 1.0);
 	add_sphere_to_scene(rt, pos, 2.0, 2.0, 0x660000); // sphere rouge
 
 

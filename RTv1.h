@@ -35,15 +35,19 @@ typedef enum				e_obj_type
 	NBOBJTYPE
 }							t_obj_type;
 
-typedef struct				s_vector3 // struct dun point dans l'espace a trois coordonnees.
+// struct dun point dans l'espace a trois coordonnees.
+typedef struct				s_vector3 
 {
-	double					x;
-	double					y;
-	double					z;
+	double					x; // strafe left right
+	double					y; // go forward.
+	double					z; // altitude.
 
 }							t_vector3;
 
+
 typedef struct				s_camera {
+	t_obj_type				type;
+
 	t_vector3				pos;
 	t_vector3				euler_angles; // pour rotation de la camera sur elle-meme.
 	double					dist_cam_screen;
@@ -57,23 +61,23 @@ typedef struct				s_light {
 
 typedef struct				s_sphere
 {
-	t_vector3				centre; // x y z
+	t_vector3				pos; // x y z
 	double					diametre;
 	double					radius;
 }							t_sphere;
 
+// struct avc vals de calculs pour passer la norme.
 typedef	struct				s_sphere_algo {
 	double					a;
 	double					b;
 	double					c;
+
 	double					det; // determinant du calcul effectué, pour trouver surface de la sphere.
 	double					t; //  calcul pour trouver la position du point sur la sphere par rapport au ray lancé.
 	double					dist;
 
-	// dist from origin to t.
-	double					sx;
-	double					sy;
-	double					sz;
+	// point from origin to t.
+	t_vector3				svec;
 
 }							t_sphere_algo;
 
@@ -93,22 +97,38 @@ typedef struct				s_cone {
 	
 }							t_cone;
 
+// struct d'un objet.
 typedef struct				s_scene_object {
 	t_obj_type				type;
+	int						color;
 
-	t_sphere				*sphere;
-	t_plane					*plane;
-	t_cylinder				*cylinder;
-	t_cone					*cone;
+	t_camera				*camera_obj; // il n y aura qu'un sc_obj camera.
+	t_sphere				*sphere_obj;
+	t_plane					*plane_obj;
+	t_cylinder				*cylinder_obj;
+	t_cone					*cone_obj;
 	struct s_scene_object	*next;
 }							t_scene_object;
 
+// liste chainee dobjets touches.
+typedef struct				s_touch
+{
+	t_scene_object			*touched_obj;
+	t_vector3				point;
+	double					distance;
+	int						color;
+	struct s_touch			*next;
+}							t_touch;
+
+// struct dun pixel de lecran
 typedef struct				s_screen_vec {
 	t_vector3				v;
-	t_vector3				touchs[VEC_OBJ_LIMIT];
-	double					touchs_dists[VEC_OBJ_LIMIT];
+	t_touch					*touched_objs_list;
 }							t_screen_vec;
 
+
+
+// La struct conteneur.
 typedef struct				s_rt 
 {
 	// MLX //
@@ -125,7 +145,7 @@ typedef struct				s_rt
 	int						screen_height;
 
 	// main objs
-	t_camera				camera;
+	t_scene_object			camera;
 	t_light					light;
 
 	// datas to save
@@ -143,12 +163,21 @@ typedef struct				s_rt
 }	t_rt;
 
 // protos
+void						add_sphere_to_scene(t_rt *rt, t_vector3 centre, double diametre, double radius, int color);
+void						sphere_check(t_screen_vec *vp_vec, t_scene_object *obj, t_vector3 origine, t_vector3 vec_dir);
 
-void add_sphere_to_scene(t_rt *rt, t_vector3 centre, double diametre, double radius);
-void sphere_check(t_rt *rt, t_vector3 origine, t_vector3 vec_dir);
+void						add_touch_to_vp_vec(t_screen_vec *vp_vec, t_scene_object *obj, t_vector3 origine, t_vector3 touch_point);
+t_scene_object				*get_closest_object(t_screen_vec *vp_vec);
 
 // utils
-t_vector3					set_pos(double x, double y, double z);
+// utils_vec.c
+t_vector3					set_vec3(double x, double y, double z);
+double						distance(t_vector3 origine, t_vector3 destination);
+//double						distance_cmp(t_vector3 origine, t_vector3 destination);
+t_vector3					normalize_vector(t_vector3);
+double						norme(t_vector3 v);
+
+// utils_angles.c
 double						angle_check(double angle);
 int							angle_rev(int angle);
 
