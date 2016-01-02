@@ -461,9 +461,6 @@ void init_var(t_rt *rt) // Definir scene.
 	// adding sphere //
 	pos = set_vec3(-0.5, 8.5, 1.0);
 	add_sphere_to_scene(rt, pos, 2.0, 2.0, 0x660000); // sphere rouge
-
-
-
 }
 
 void init_mlx(t_rt *rt)
