@@ -80,7 +80,8 @@ void trace_black_screen(t_rt *rt) // pour remplir lecran de noir. => protect ecr
 	}
 }
 
-void run_trough_objs(t_rt *rt, t_screen_vec *vp_vector) {
+void run_trough_objs(t_rt *rt, t_screen_vec *vp_vector)
+{
 	t_scene_object	*tmp;
 
 	tmp = rt->scene_objs;
@@ -166,6 +167,7 @@ int ft_trace_rt(t_rt *rt)
 	
 
 	raytrace_objs(rt);
+	calculate_shadows(rt);
 	display_rt(rt); // parcours les vec et affiche les colors.
 
 
@@ -321,8 +323,10 @@ void init_var(t_rt *rt) // Definir scene.
 
 	rt->camera.camera_obj->dist_cam_screen = 1.0;
 
-	// defining light values;
-	rt->light.pos.x = 0.0;
+	// --- LIGHT
+	pos = set_vec3(-4.0, 5.0, 2.0);
+	add_light_to_scene(rt, pos, 1.0);
+
 
 	// --- SPHERES 
 	
@@ -331,19 +335,19 @@ void init_var(t_rt *rt) // Definir scene.
 	//add_sphere_to_scene(rt, pos, 2.0, 2.0, 0x006600); // sphere verte
 	
 	// adding sphere //
-	pos = set_vec3(1.5, 8.0, 1.0);
-	add_sphere_to_scene(rt, pos, 2.0, 2.0, 0x0066FF); // sphere bleu
+	pos = set_vec3(2.0, 5.0, 2.0);
+	add_sphere_to_scene(rt, pos, 2.0, 1.0, 0x0066FF); // sphere bleu
 	
 	// adding sphere //
 	//pos = set_vec3(-0.5, 8.5, 1.0);
 	//add_sphere_to_scene(rt, pos, 2.0, 2.0, 0x660000); // sphere rouge
 
-	// --- PLANES // TODO : y semble inverse ........ 
+	// --- PLANES //
 	
 	// adding plane //
 	normale = set_vec3(0.0, 0.0, 1.0);
 	pos = set_vec3(0.0, 0.0, 0.0);
-	add_plane_to_scene(rt, pos, normale, 0x669999);
+	add_plane_to_scene(rt, pos, normale, 0x669999); // plan vert
 	
 	// adding plane //
 	//normale = set_vec3(1.0, 0.0, 0.0);
@@ -352,11 +356,12 @@ void init_var(t_rt *rt) // Definir scene.
 
 	// adding plane //
 	normale = set_vec3(0.0, 1.0, 0.0);
-	pos = set_vec3(0.0, -8.0, 0.0);
-	add_plane_to_scene(rt, pos, normale, 0x663366);
+	pos = set_vec3(0.0, 8.0, 0.0);
+	add_plane_to_scene(rt, pos, normale, 0x663366); // plan violet
 
 
 	// DEBUG
+	// OBJ DEBUG
 	t_scene_object *tmp;
 	int i;
 
@@ -368,6 +373,16 @@ void init_var(t_rt *rt) // Definir scene.
 	}
 	printf("Scene :\n");
 	printf("Nombre d'objets : %d \n", i);
+	// LIGHT DEBUG
+	t_light *tmp_light;
+
+	i = 0;
+	tmp_light = rt->scene_lights;
+	while (tmp_light) {
+		i++;
+		tmp_light = tmp_light->next;
+	}
+	printf("Nombre de lights : %d \n", i);
 }
 
 void init_mlx(t_rt *rt)
@@ -394,6 +409,7 @@ void RTv1()
 {
 	t_rt rt;
 	rt.scene_objs = NULL; // init list chainee d'objs.
+	rt.scene_lights = NULL;
 	init_var(&rt);
 	calculate_viewplane(&rt);
 	//rotate_viewplane(&rt); // FONCTIONNE PAS ....

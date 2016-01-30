@@ -21,7 +21,19 @@ t_vector3 set_vec3(double x, double y, double z) {
 	return (ret);
 }
 
-t_vector3 vec_dir(t_vector3 origine, t_vector3 destination) {
+t_vector3	point_from_vecdir(t_vector3 origine, t_vector3 vec_dir)
+{
+	// return le point origine + vecdir. Utile pour les limites.
+	t_vector3	ret_point;
+
+	ret_point.x = origine.x + vec_dir.x;
+	ret_point.y = origine.y + vec_dir.y;
+	ret_point.z = origine.z + vec_dir.z;
+	return (ret_point);
+}
+
+t_vector3 vec_dir(t_vector3 origine, t_vector3 destination)
+{
 	// return le vecteur de directions entre les deux points.
 	t_vector3 distance;
 

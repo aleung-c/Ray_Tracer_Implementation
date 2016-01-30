@@ -18,89 +18,12 @@
 # include <math.h>
 # include <mlx.h>
 # include "X.h"
+# include "obj_header.h"
+
 # define SCREEN_W 720
 # define SCREEN_H 720
 # define TOTAL_PX SCREEN_W * SCREEN_H
 # define VEC_OBJ_LIMIT 10
-
-typedef enum				e_obj_type
-{
-	CAM,
-	LIGHT,
-	PLANE,
-	SPHERE,
-	CYLINDER,
-	CONE,
-	INTERSECTION,
-	NBOBJTYPE
-}							t_obj_type;
-
-// struct dun point dans l'espace a trois coordonnees.
-typedef struct				s_vector3 
-{
-	double					x; // strafe left right
-	double					y; // go forward.
-	double					z; // altitude.
-
-}							t_vector3;
-
-
-typedef struct				s_camera {
-	t_obj_type				type;
-
-	t_vector3				pos;
-	t_vector3				euler_angles; // pour rotation de la camera sur elle-meme.
-	double					dist_cam_screen;
-}							t_camera;
-
-typedef struct				s_light {
-	t_vector3				pos;
-	double					intensity;
-
-}							t_light;
-
-typedef struct				s_sphere
-{
-	t_vector3				pos; // x y z
-	double					diametre;
-	double					radius;
-}							t_sphere;
-
-// struct avc vals de calculs pour passer la norme.
-typedef	struct				s_sphere_algo {
-	double					a;
-	double					b;
-	double					c;
-
-	double					det; // determinant du calcul effectué, pour trouver surface de la sphere.
-	double					t; //  calcul pour trouver la position du point sur la sphere par rapport au ray lancé.
-	double					dist;
-
-	// point from origin to t.
-	t_vector3				tpoint;
-
-}							t_sphere_algo;
-
-typedef struct				s_plane
-{
-	t_vector3				normale;
-	t_vector3				point;
-
-}							t_plane;
-
-typedef	struct				s_plane_algo {
-	double					t;
-	t_vector3				tpoint;
-}							t_plane_algo;
-
-typedef struct				s_cylinder {
-
-
-}							t_cylinder;
-
-typedef struct				s_cone {
-	
-}							t_cone;
 
 // struct d'un objet.
 typedef struct				s_scene_object {
@@ -114,6 +37,7 @@ typedef struct				s_scene_object {
 	t_cone					*cone_obj;
 	struct s_scene_object	*next;
 }							t_scene_object;
+
 
 // liste chainee dobjets touches.
 typedef struct				s_touch
@@ -130,8 +54,6 @@ typedef struct				s_screen_vec {
 	t_vector3				v;
 	t_touch					*touched_objs_list;
 }							t_screen_vec;
-
-
 
 // La struct conteneur.
 typedef struct				s_rt 
@@ -151,7 +73,7 @@ typedef struct				s_rt
 
 	// main objs
 	t_scene_object			camera;
-	t_light					light;
+	t_light					*scene_lights;
 
 	// datas to save
 	t_vector3				vp_center_pos;
@@ -165,11 +87,17 @@ typedef struct				s_rt
 
 	// OBJECTS
 	t_scene_object			*scene_objs; // liste chainee d'obj.
-}	t_rt;
+}							t_rt;
 
 // protos
+
+void						add_light_to_scene(t_rt *rt, t_vector3 pos, float intensity);
+
 void						add_sphere_to_scene(t_rt *rt, t_vector3 centre, double diametre, double radius, int color);
 void						sphere_check(t_screen_vec *vp_vec, t_scene_object *obj, t_vector3 origine, t_vector3 vec_dir);
+int							sphere_check_touch(t_scene_object *obj,
+								t_vector3 origine, t_vector3 vec_dir);
+
 void						algo_touching_sphere(t_sphere_algo *algo, t_scene_object *obj,
 								t_vector3 origine, t_vector3 vec_dir);
 void						algo_sphere_touched(t_sphere_algo *algo, t_vector3 origine, t_vector3 vec_dir);
@@ -177,19 +105,25 @@ void						algo_sphere_touched(t_sphere_algo *algo, t_vector3 origine, t_vector3 
 void						add_plane_to_scene(t_rt *rt, t_vector3 point, t_vector3 normale, int color);
 void						plane_check(t_screen_vec *vp_vec, t_scene_object *obj, t_vector3 origine,
 								t_vector3 vec_dir);
-
+int							plane_check_touch(t_scene_object *obj, t_vector3 origine,
+								t_vector3 vec_dir);
 
 void						add_touch_to_vp_vec(t_screen_vec *vp_vec, t_scene_object *obj, t_vector3 origine, t_vector3 touch_point);
 t_scene_object				*get_closest_object(t_screen_vec *vp_vec);
 
+void						calculate_shadows(t_rt *rt);
+void						run_trough_lights_shadows(t_rt *rt, t_screen_vec *vp_vector);
+int							check_is_in_shadow(t_rt *rt, t_screen_vec *vp_vector, t_light *cur_light);
 
 // utils
 // utils_vec.c
 t_vector3					set_vec3(double x, double y, double z);
 double						distance(t_vector3 origine, t_vector3 destination);
+t_vector3					point_from_vecdir(t_vector3 origine, t_vector3 vec_dir);
 //double						distance_cmp(t_vector3 origine, t_vector3 destination);
 t_vector3					normalize_vector(t_vector3);
 double						norme(t_vector3 v);
+t_vector3					vec_dir(t_vector3 origine, t_vector3 destination);
 
 // utils_angles.c
 double						angle_check(double angle);

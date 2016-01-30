@@ -62,3 +62,27 @@ void	algo_sphere_touched(t_sphere_algo *algo, t_vector3 origine,
 	//s_vect.y = (algo.svec.y - obj->sphere_obj->pos.y) / obj->sphere_obj->radius;
 	//s_vect.z = (algo.svec.z - obj->sphere_obj->pos.z) / obj->sphere_obj->radius;
 }
+
+int		sphere_check_touch(t_scene_object *obj,
+						t_vector3 origine, t_vector3 vec_dir)
+{
+	// TODO : ne fonctionne pas pour lombre, le vecteur depasse la cam ...
+	// sert seulement a voir si ca touche.
+	t_sphere_algo		algo; // contient toutes les val pour calculer.
+	t_vector3			max_point;
+
+	max_point = point_from_vecdir(origine, vec_dir);
+	algo_touching_sphere(&algo, obj, origine, vec_dir);
+	// regarder si touche une sphere en calculant le determinant;
+	algo.det = algo.b * algo.b - 4 * algo.a * algo.c;
+	if (algo.det >= 0.0)
+	{
+		// touche sphere
+		algo_sphere_touched(&algo, origine, vec_dir);
+		if (distance(origine, algo.tpoint) < distance(origine, max_point))
+			return (1);
+		else
+			return (0);
+	}
+	return (0);
+}
