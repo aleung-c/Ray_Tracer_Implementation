@@ -25,6 +25,8 @@ void add_touch_to_vp_vec(t_screen_vec *vp_vec, t_scene_object *obj, t_vector3 or
 	new_obj->point = touch_point;
 	new_obj->color = obj->color;
 
+	
+
 	new_obj->distance = distance(origine, touch_point);
 	//printf("distance : %.4f \n", new_obj->distance);
 
@@ -49,7 +51,6 @@ void add_touch_to_vp_vec(t_screen_vec *vp_vec, t_scene_object *obj, t_vector3 or
 		tmp->next = new_obj;
 		return ;
 	}
-
 }
 
 t_scene_object *get_closest_object(t_screen_vec *vp_vec)

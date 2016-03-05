@@ -27,6 +27,7 @@
 
 // struct d'un objet.
 typedef struct				s_scene_object {
+	char					*name;
 	t_obj_type				type;
 	int						color;
 
@@ -120,7 +121,7 @@ int							check_is_in_shadow(t_rt *rt, t_screen_vec *vp_vector, t_light *cur_lig
 t_vector3					set_vec3(double x, double y, double z);
 double						distance(t_vector3 origine, t_vector3 destination);
 t_vector3					point_from_vecdir(t_vector3 origine, t_vector3 vec_dir);
-//double						distance_cmp(t_vector3 origine, t_vector3 destination);
+// double					distance_cmp(t_vector3 origine, t_vector3 destination);
 t_vector3					normalize_vector(t_vector3);
 double						norme(t_vector3 v);
 t_vector3					vec_dir(t_vector3 origine, t_vector3 destination);
@@ -128,5 +129,10 @@ t_vector3					vec_dir(t_vector3 origine, t_vector3 destination);
 // utils_angles.c
 double						angle_check(double angle);
 int							angle_rev(int angle);
+
+// utils_obj.c
+void						SetObjectName(t_scene_object *Obj, char *Str);
+char						*GetObjectName(t_scene_object *Obj);
+char						*GetObjectType(t_scene_object *Obj);
 
 #endif

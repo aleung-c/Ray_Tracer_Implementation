@@ -70,8 +70,14 @@ int		sphere_check_touch(t_scene_object *obj,
 	// sert seulement a voir si ca touche.
 	t_sphere_algo		algo; // contient toutes les val pour calculer.
 	t_vector3			max_point;
+	double				DistanceToObj;
+	double				DistanceToLight;
+
+
 
 	max_point = point_from_vecdir(origine, vec_dir);
+	DistanceToLight = distance(origine, max_point);
+
 	algo_touching_sphere(&algo, obj, origine, vec_dir);
 	// regarder si touche une sphere en calculant le determinant;
 	algo.det = algo.b * algo.b - 4 * algo.a * algo.c;
@@ -79,7 +85,8 @@ int		sphere_check_touch(t_scene_object *obj,
 	{
 		// touche sphere
 		algo_sphere_touched(&algo, origine, vec_dir);
-		if (distance(origine, algo.tpoint) < distance(origine, max_point))
+		DistanceToObj = distance(origine, algo.tpoint);
+		if (DistanceToObj < DistanceToLight)
 			return (1);
 		else
 			return (0);

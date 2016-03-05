@@ -12,7 +12,7 @@
 
 
 #include "RTv1.h"
-#include <stdio.h>
+#include <stdio.h> //
 
 int		key_press(int keycode, t_rt *rt)
 {
@@ -313,7 +313,7 @@ void init_var(t_rt *rt) // Definir scene.
 
 	// defining main cam var //
 	rt->camera.type = CAM;
-	rt->camera.camera_obj = (t_camera *)malloc(sizeof(t_camera)); // alloue l'obj.
+	rt->camera.camera_obj = (t_camera *)malloc(sizeof(t_camera));
 	rt->camera.camera_obj->pos.x = 1.0;
 	rt->camera.camera_obj->pos.y = 1.0;
 	rt->camera.camera_obj->pos.z = 1.0;
@@ -324,7 +324,7 @@ void init_var(t_rt *rt) // Definir scene.
 	rt->camera.camera_obj->dist_cam_screen = 1.0;
 
 	// --- LIGHT
-	pos = set_vec3(-4.0, 5.0, 2.0);
+	pos = set_vec3(2.0, 5.0, 3.0);
 	add_light_to_scene(rt, pos, 1.0);
 
 
@@ -359,8 +359,7 @@ void init_var(t_rt *rt) // Definir scene.
 	pos = set_vec3(0.0, 8.0, 0.0);
 	add_plane_to_scene(rt, pos, normale, 0x663366); // plan violet
 
-
-	// DEBUG
+	// DEBUG ---------- //
 	// OBJ DEBUG
 	t_scene_object *tmp;
 	int i;
@@ -369,6 +368,9 @@ void init_var(t_rt *rt) // Definir scene.
 	tmp = rt->scene_objs;
 	while (tmp) {
 		i++;
+		if (new_obj->type == SPHERE) {
+			printf("Add sphere to scene \n");
+		}
 		tmp = tmp->next;
 	}
 	printf("Scene :\n");
@@ -383,6 +385,8 @@ void init_var(t_rt *rt) // Definir scene.
 		tmp_light = tmp_light->next;
 	}
 	printf("Nombre de lights : %d \n", i);
+
+	// DEBUG End --------- //
 }
 
 void init_mlx(t_rt *rt)
@@ -412,7 +416,7 @@ void RTv1()
 	rt.scene_lights = NULL;
 	init_var(&rt);
 	calculate_viewplane(&rt);
-	//rotate_viewplane(&rt); // FONCTIONNE PAS ....
+	//rotate_viewplane(&rt); //  Optionnel : ne fonctionne pas ....
 	init_mlx(&rt);
 }
 

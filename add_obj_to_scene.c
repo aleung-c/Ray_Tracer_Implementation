@@ -11,6 +11,8 @@
 /* ************************************************************************** */
 
 #include "RTv1.h"
+#include <stdio.h>
+
 
 void add_sphere_to_scene(t_rt *rt, t_vector3 centre, double diametre, double radius, int color)
 {

@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "RTv1.h"
+#include <stdio.h> //
 
 void		calculate_shadows(t_rt *rt)
 {
@@ -23,6 +24,7 @@ void		calculate_shadows(t_rt *rt)
 	scan_x = 0;
 	scan_y = 0;
 	i = 0;
+
 	//color = 0x000000; // base color = black;
 	while (scan_y < rt->screen_height) // pour chaque colonne.
 	{
@@ -75,17 +77,13 @@ int check_is_in_shadow(t_rt *rt, t_screen_vec *vp_vector, t_light *cur_light)
 			{
 				if (sphere_check_touch(tmp,
 					vp_vector->touched_objs_list->point, vec_direction) == 1)
-				{
 					return (1);
-				}
 			}
 			else if (tmp->type == PLANE)
 			{
 				if (plane_check_touch(tmp,
 					vp_vector->touched_objs_list->point, vec_direction) == 1)
-				{
 					return (1);
-				}
 			}
 		}
 		tmp = tmp->next;
