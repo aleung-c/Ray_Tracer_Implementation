@@ -12,7 +12,8 @@
 
 #include "RTv1.h"
 
-t_vector3 set_vec3(double x, double y, double z) {
+t_vector3 set_vec3(double x, double y, double z)
+{
 	t_vector3 ret;
 
 	ret.x = x;
@@ -43,7 +44,16 @@ t_vector3 vec_dir(t_vector3 origine, t_vector3 destination)
 	return (distance);
 }
 
-t_vector3 vec_dir_distance_normalized(t_vector3 origine, t_vector3 destination) {
+double vector_length(t_vector3 vec_dir)
+{
+	double ret;
+
+	ret = vec_dir.x + vec_dir.y + vec_dir.z;
+	return (ret);
+}
+
+t_vector3 vec_dir_distance_normalized(t_vector3 origine, t_vector3 destination)
+{
 	// return un vec de distance normalisé;
 	t_vector3		ret;
 
@@ -54,7 +64,8 @@ t_vector3 vec_dir_distance_normalized(t_vector3 origine, t_vector3 destination) 
 	return (ret);
 }
 
-double distance(t_vector3 origine, t_vector3 destination) {
+double distance(t_vector3 origine, t_vector3 destination)
+{
 	// return une val de distance pour comparaison;
 	double		ret;
 
@@ -62,7 +73,8 @@ double distance(t_vector3 origine, t_vector3 destination) {
 	return (ret);
 }
 
-t_vector3 normalize_vector(t_vector3 v) {
+t_vector3 normalize_vector(t_vector3 v)
+{
 	// normalise un vecteur de distance.
 	t_vector3	ret;
 	double	normal;

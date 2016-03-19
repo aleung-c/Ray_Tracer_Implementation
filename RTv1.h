@@ -120,6 +120,7 @@ int							check_is_in_shadow(t_rt *rt, t_screen_vec *vp_vector, t_light *cur_lig
 // utils_vec.c
 t_vector3					set_vec3(double x, double y, double z);
 double						distance(t_vector3 origine, t_vector3 destination);
+double						vector_length(t_vector3 vec_dir);
 t_vector3					point_from_vecdir(t_vector3 origine, t_vector3 vec_dir);
 // double					distance_cmp(t_vector3 origine, t_vector3 destination);
 t_vector3					normalize_vector(t_vector3);
