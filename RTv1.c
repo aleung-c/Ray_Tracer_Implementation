@@ -324,7 +324,7 @@ void init_var(t_rt *rt) // Definir scene.
 	rt->camera.camera_obj->dist_cam_screen = 1.0;
 
 	// --- LIGHT
-	pos = set_vec3(2.0, 5.0, 3.0);
+	pos = set_vec3(-1.5, 5.0, 2.0);
 	add_light_to_scene(rt, pos, 1.0);
 
 
@@ -336,18 +336,18 @@ void init_var(t_rt *rt) // Definir scene.
 	
 	// adding sphere //
 	pos = set_vec3(2.0, 5.0, 2.0);
-	add_sphere_to_scene(rt, pos, 2.0, 1.0, 0x0066FF); // sphere bleu
+	add_sphere_to_scene(rt, pos, 1.0, 1.0, 0x0066FF); // sphere bleu
 	
 	// adding sphere //
-	//pos = set_vec3(-0.5, 8.5, 1.0);
-	//add_sphere_to_scene(rt, pos, 2.0, 2.0, 0x660000); // sphere rouge
+	pos = set_vec3(-0.5, 5.0, 2.0);
+	add_sphere_to_scene(rt, pos, 1.0, 1.0, 0x660000); // sphere rouge
 
 	// --- PLANES //
 	
 	// adding plane //
 	normale = set_vec3(0.0, 0.0, 1.0);
 	pos = set_vec3(0.0, 0.0, 0.0);
-	add_plane_to_scene(rt, pos, normale, 0x669999); // plan vert
+	//add_plane_to_scene(rt, pos, normale, 0x669999); // plan vert
 	
 	// adding plane //
 	//normale = set_vec3(1.0, 0.0, 0.0);
@@ -355,9 +355,9 @@ void init_var(t_rt *rt) // Definir scene.
 	//add_plane_to_scene(rt, pos, normale, 0x6699FF);
 
 	// adding plane //
-	normale = set_vec3(0.0, 1.0, 0.0);
-	pos = set_vec3(0.0, 8.0, 0.0);
-	add_plane_to_scene(rt, pos, normale, 0x663366); // plan violet
+	//normale = set_vec3(0.0, 1.0, 0.0);
+	//pos = set_vec3(0.0, 10.0, 0.0);
+	//add_plane_to_scene(rt, pos, normale, 0x663366); // plan violet
 
 	// DEBUG ---------- //
 	// OBJ DEBUG
@@ -368,7 +368,7 @@ void init_var(t_rt *rt) // Definir scene.
 	tmp = rt->scene_objs;
 	while (tmp) {
 		i++;
-		if (new_obj->type == SPHERE) {
+		if (tmp->type == SPHERE) {
 			printf("Add sphere to scene \n");
 		}
 		tmp = tmp->next;

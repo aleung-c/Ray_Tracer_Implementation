@@ -16,7 +16,6 @@
 void		calculate_shadows(t_rt *rt)
 {
 	// parcours les obj et trace des rayons du point d'intersection vers les lights
-
 	int scan_x;
 	int scan_y;
 	int i;
@@ -52,7 +51,9 @@ void		run_trough_lights_shadows(t_rt *rt, t_screen_vec *vp_vector)
 		if (check_is_in_shadow(rt, vp_vector, tmp) == 1)
 		{
 			// isinshadow
-			vp_vector->touched_objs_list->color = 0x000000;
+			if (vp_vector->touched_objs_list != NULL) { 
+				vp_vector->touched_objs_list->color = 0x000000;
+			} // si no obj touche, reste noir.
 		}
 		tmp = tmp->next;
 	}
@@ -64,14 +65,20 @@ int check_is_in_shadow(t_rt *rt, t_screen_vec *vp_vector, t_light *cur_light)
 	t_scene_object	*tmp;
 	t_vector3		vec_direction;
 
-	vec_direction = vec_dir(vp_vector->touched_objs_list->point, cur_light->pos);
+	if (vp_vector->touched_objs_list != NULL) { // protect segfault
+		vec_direction = vec_dir(vp_vector->touched_objs_list->point, cur_light->pos);
+	} else {
+		return (1);
+	}
 	//vec_direction = normalize_vector(vec_direction);
 	tmp = rt->scene_objs;
 
 	// parcourir tous les objs.
 	while (tmp)
 	{
-		if (tmp != vp_vector->touched_objs_list->touched_obj)
+		//printf ("shadowcheck : tmp = %p \n touchedobj = %p \n", tmp, vp_vector->touched_objs_list->touched_obj);
+
+		if (tmp != vp_vector->touched_objs_list->touched_obj) // -> Tester = OK;
 		{
 			if (tmp->type == SPHERE)
 			{

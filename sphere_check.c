@@ -86,7 +86,7 @@ int		sphere_check_touch(t_scene_object *obj,
 		// touche sphere
 		algo_sphere_touched(&algo, origine, vec_dir);
 		DistanceToObj = distance(origine, algo.tpoint);
-		if (DistanceToObj < DistanceToLight)
+		if (DistanceToObj <= DistanceToLight)
 			return (1);
 		else
 			return (0);
