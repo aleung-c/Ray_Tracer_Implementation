@@ -142,7 +142,8 @@ void display_rt(t_rt *rt)
 				// no touch, put black;
 				pixel_put_to_image(rt, scan_x, scan_y, 0x000000);
 			}
-			else {
+			else 
+			{
 				//t_scene_object	*closest_obj;
 				//closest_obj = get_closest_object(&(rt->vp_vectors[i]));
 				//pixel_put_to_image(rt, scan_x, scan_y, closest_obj->color);
@@ -165,11 +166,9 @@ int ft_trace_rt(t_rt *rt)
 {
 	trace_black_screen(rt);
 	
-
 	raytrace_objs(rt);
 	calculate_shadows(rt);
 	display_rt(rt); // parcours les vec et affiche les colors.
-
 
 	return (0);
 }
@@ -210,17 +209,25 @@ void calculate_viewplane(t_rt *rt)
 	rt->vp_center_pos.y = rt->camera.camera_obj->pos.y + rt->camera.camera_obj->dist_cam_screen;
 	rt->vp_center_pos.z = rt->camera.camera_obj->pos.z;
 
-	rt->vp_up_pos.x = rt->camera.camera_obj->pos.x;
+	/*rt->vp_up_pos.x = rt->camera.camera_obj->pos.x;
 	rt->vp_up_pos.y = rt->camera.camera_obj->pos.y + rt->camera.camera_obj->dist_cam_screen;
 	rt->vp_up_pos.z = rt->camera.camera_obj->pos.z + 1.0;
 
 	rt->vp_right_pos.x = rt->camera.camera_obj->pos.x + 1.0;
 	rt->vp_right_pos.y = rt->camera.camera_obj->pos.y + rt->camera.camera_obj->dist_cam_screen;
-	rt->vp_right_pos.z = rt->camera.camera_obj->pos.z;
+	rt->vp_right_pos.z = rt->camera.camera_obj->pos.z;*/
+
+	float vecdir_cam_screen_y = rt->vp_center_pos.y - rt->camera.camera_obj->pos.y;
+
+	vecdir_cam_screen_y *= vecdir_cam_screen_y; // au carre. longueur au carre
+	vecdir_cam_screen_y += 1.0; // == largeur de la moitie de lecran en fonction de x au carre
+	vecdir_cam_screen_y = sqrt(vecdir_cam_screen_y);
+
 
 	rt->vp_upleft_pos.x = rt->camera.camera_obj->pos.x - 1.0;
 	rt->vp_upleft_pos.y = rt->camera.camera_obj->pos.y + rt->camera.camera_obj->dist_cam_screen;
 	rt->vp_upleft_pos.z = rt->camera.camera_obj->pos.z + 1.0;
+
 
 	// CHECK LOGS //
 	// printf("rt->vp_center_pos : %f x, %f y, %f z;\n", rt->vp_center_pos.x, rt->vp_center_pos.y, rt->vp_center_pos.z);
@@ -237,10 +244,10 @@ void calculate_viewplane(t_rt *rt)
 	y = 0;
 	x = 1;
 	i = 1;
-	inc_x = 2.0 / rt->screen_width;
-	inc_z = 2.0 / rt->screen_height;
+	inc_x = 2.0 / (float)rt->screen_width;
+	inc_z = 2.0 / (float)rt->screen_height;
 	xref = rt->vp_upleft_pos.x;
-	yref = rt->vp_vectors[0].v.y; // juste a copier dans chaque case, l'ecran est plat.
+	yref = rt->vp_vectors[0].v.y;
 	zref = rt->vp_upleft_pos.z;
 	while (y < rt->screen_height)
 	{
@@ -259,6 +266,12 @@ void calculate_viewplane(t_rt *rt)
 		x = 0;
 		y++;
 	}
+	/*i = 0;
+	int  sc_size = rt->screen_height * rt->screen_width;
+	while (i < sc_size) {
+		printf("VLength = %f \n", vector_length(rt->vp_vectors[i].v));
+		i++;
+	}*/
 	// printf("rt->vp_vectors[last] : %f x, %f y, %f z;\n", rt->vp_vectors[400 + 200 * 400].x, rt->vp_vectors[400 + 200 * 400].y, rt->vp_vectors[400 + 200 * 400].z);
 }
 
@@ -314,8 +327,8 @@ void init_var(t_rt *rt) // Definir scene.
 	// defining main cam var //
 	rt->camera.type = CAM;
 	rt->camera.camera_obj = (t_camera *)malloc(sizeof(t_camera));
-	rt->camera.camera_obj->pos.x = 1.0;
-	rt->camera.camera_obj->pos.y = 1.0;
+	rt->camera.camera_obj->pos.x = 0.0;
+	rt->camera.camera_obj->pos.y = 0.0;
 	rt->camera.camera_obj->pos.z = 1.0;
 	rt->camera.camera_obj->euler_angles.x = 0.0;
 	rt->camera.camera_obj->euler_angles.y = 0.0;
@@ -324,7 +337,8 @@ void init_var(t_rt *rt) // Definir scene.
 	rt->camera.camera_obj->dist_cam_screen = 1.0;
 
 	// --- LIGHT
-	pos = set_vec3(-1.0, 5.0, 2.0);
+	//pos = set_vec3(-1.5, 5.0, 2.0);
+	pos = set_vec3(0.0, 0.0, 0.0);
 	add_light_to_scene(rt, pos, 1.0);
 
 	// --- SPHERES 
@@ -339,7 +353,7 @@ void init_var(t_rt *rt) // Definir scene.
 	
 	// adding sphere //
 	pos = set_vec3(-0.5, 5.0, 2.0);
-	add_sphere_to_scene(rt, pos, 0.2, 0.2, 0x660000); // sphere rouge
+	add_sphere_to_scene(rt, pos, 1.0, 0.5, 0x660000); // sphere rouge
 
 	// --- PLANES //
 	
@@ -355,7 +369,7 @@ void init_var(t_rt *rt) // Definir scene.
 
 	// adding plane //
 	normale = set_vec3(0.0, 1.0, 0.0);
-	pos = set_vec3(0.0, 10.0, 0.0);
+	pos = set_vec3(0.0, 100, 0.0);
 	add_plane_to_scene(rt, pos, normale, 0x663366); // plan violet
 
 	// DEBUG ---------- //

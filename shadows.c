@@ -13,6 +13,9 @@
 #include "RTv1.h"
 #include <stdio.h> //
 
+
+// TODO : A refaire. seul le premier objet envoie de l'ombre.
+
 void		calculate_shadows(t_rt *rt)
 {
 	// parcours les obj et trace des rayons du point d'intersection vers les lights
@@ -54,6 +57,7 @@ void		run_trough_lights_shadows(t_rt *rt, t_screen_vec *vp_vector)
 			if (vp_vector->touched_objs_list != NULL) { 
 				vp_vector->touched_objs_list->color = 0x000000;
 			} // si no obj touche, reste noir.
+			
 		}
 		cur_light = cur_light->next;
 	}
@@ -68,7 +72,7 @@ int check_is_in_shadow(t_rt *rt, t_screen_vec *vp_vector, t_light *cur_light)
 	if (vp_vector->touched_objs_list != NULL) { // protect segfault
 		vec_direction = vec_dir(vp_vector->touched_objs_list->point, cur_light->pos);
 	} else {
-		return (1);
+		return (0); // no obj, dont touch the color.
 	}
 	// vec_direction = normalize_vector(vec_direction);
 	tmp = rt->scene_objs;
@@ -86,12 +90,12 @@ int check_is_in_shadow(t_rt *rt, t_screen_vec *vp_vector, t_light *cur_light)
 					vp_vector->touched_objs_list->point, vec_direction) == 1)
 					return (1);
 			}
-			else if (tmp->type == PLANE)
+			/*else if (tmp->type == PLANE)
 			{
 				if (plane_check_touch(tmp,
 					vp_vector->touched_objs_list->point, vec_direction) == 1)
 					return (1);
-			}
+			}*/
 		}
 		tmp = tmp->next;
 	}

@@ -69,7 +69,7 @@ double distance(t_vector3 origine, t_vector3 destination)
 	// return une val de distance pour comparaison;
 	double		ret;
 
-	ret = sqrt(pow(destination.x - origine.x, 2) + pow(destination.y - origine.y, 2) + pow(destination.z - origine.z, 2));
+	ret = sqrt(pow(destination.x - origine.x, 2.0) + pow(destination.y - origine.y, 2.0) + pow(destination.z - origine.z, 2.0));
 	return (ret);
 }
 
