@@ -18,8 +18,8 @@ void	sphere_check(t_screen_vec *vp_vec, t_scene_object *obj,
 	t_sphere_algo		algo; // contient toutes les val pour calculer.
 
 	algo_touching_sphere(&algo, obj, origine, vec_dir);
-	// regarder si touche une sphere en calculant le determinant;
-	algo.det = (algo.b * algo.b) - 4.0 * algo.a * algo.c;
+	
+	
 	// si le vec touche la sphere, remplir le touch.
 	if (algo.det > 0.0) {
 		// touche la sphere.
@@ -48,6 +48,9 @@ void	algo_touching_sphere(t_sphere_algo *algo, t_scene_object *obj,
 		(obj->sphere_obj->pos.x * origine.x + obj->sphere_obj->pos.y *
 			origine.y + obj->sphere_obj->pos.z * origine.z)
 		- pow(obj->sphere_obj->radius, 2);
+
+		// regarder si touche une sphere en calculant le determinant;
+		algo->det = (algo->b * algo->b) - 4.0 * algo->a * algo->c;
 }
 
 void	algo_sphere_touched(t_sphere_algo *algo, t_vector3 origine,
@@ -80,23 +83,30 @@ int		sphere_check_touch(t_scene_object *obj,
 {
 	// TODO : ne fonctionne pas pour lombre, le vecteur depasse la light ...
 	// sert seulement a voir si ca touche.
+	// toujours pas ...
 	t_sphere_algo		algo; // contient toutes les val pour calculer.
 	
-	double				MaxVecLength;
-	double				VecLengthToObj;
-	t_vector3			VecToObj;
+	t_vector3			LightObjtouchPoint;
+	double 				dist_to_light;
+	double				dist_to_obj;
 
-	MaxVecLength = vector_length(vec_direction);
+	LightObjtouchPoint.x = origine.x + vec_direction.x;
+	LightObjtouchPoint.y = origine.y + vec_direction.y;
+	LightObjtouchPoint.z = origine.z + vec_direction.z;
+
+	dist_to_light = distance(origine, LightObjtouchPoint);
+
 	algo_touching_sphere(&algo, obj, origine, vec_direction);
 	// regarder si touche une sphere en calculant le determinant;
-	algo.det = algo.b * algo.b - 4.0 * algo.a * algo.c;
+	//algo.det = (algo.b * algo.b) - 4.0 * algo.a * algo.c;
 	if (algo.det > 0.0)
 	{
 		// touche sphere
 		algo_sphere_touched(&algo, origine, vec_direction);
-		VecToObj = vec_dir(origine, algo.tpoint);
-		VecLengthToObj = vector_length(VecToObj);
-		if (VecLengthToObj <= MaxVecLength) {
+
+		dist_to_obj = distance(origine, algo.tpoint);
+		//printf("dist to light : %f - dist to obj : %f \n", dist_to_light, dist_to_obj);
+		if (dist_to_obj < dist_to_light) {
 			return (1);
 		} else {
 			return (0);

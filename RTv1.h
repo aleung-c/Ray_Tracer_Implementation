@@ -47,11 +47,13 @@ typedef struct				s_touch
 	t_vector3				point;
 	double					distance;
 	int						color;
+	int 					display_color;
 	struct s_touch			*next;
 }							t_touch;
 
 // struct dun pixel de lecran
-typedef struct				s_screen_vec {
+typedef struct				s_screen_vec 
+{
 	t_vector3				v;
 	t_touch					*touched_objs_list;
 }							t_screen_vec;
@@ -88,11 +90,25 @@ typedef struct				s_rt
 
 	// OBJECTS
 	t_scene_object			*scene_objs; // liste chainee d'obj.
+
+	// Reusable Vars
+	t_scene_object			*tmp; // to access objects;
+	int						scan_x;
+	int						scan_y;
+	int						i;
+	int						color;
 }							t_rt;
+
+typedef struct s_rgb 
+{
+	int						r;
+	int						g;
+	int						b;
+}				t_rgb;
 
 // protos
 
-void						add_light_to_scene(t_rt *rt, t_vector3 pos, float intensity);
+void						add_light_to_scene(t_rt *rt, t_vector3 pos, double intensity, double light_power_distance);
 
 void						add_sphere_to_scene(t_rt *rt, t_vector3 centre, double diametre, double radius, int color);
 void						sphere_check(t_screen_vec *vp_vec, t_scene_object *obj, t_vector3 origine, t_vector3 vec_dir);
@@ -112,9 +128,12 @@ int							plane_check_touch(t_scene_object *obj, t_vector3 origine,
 void						add_touch_to_vp_vec(t_screen_vec *vp_vec, t_scene_object *obj, t_vector3 origine, t_vector3 touch_point);
 t_scene_object				*get_closest_object(t_screen_vec *vp_vec);
 
-void						calculate_shadows(t_rt *rt);
+void						calculate_casted_shadows(t_rt *rt);
 void						run_trough_lights_shadows(t_rt *rt, t_screen_vec *vp_vector);
 int							check_is_in_shadow(t_rt *rt, t_screen_vec *vp_vector, t_light *cur_light);
+
+void						calculate_inner_shadows(t_rt *rt);
+void						run_trough_lights_inner_shadows(t_rt *rt, t_screen_vec *vp_vector);
 
 // utils
 // utils_vec.c

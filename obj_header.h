@@ -49,6 +49,7 @@ typedef struct				s_camera {
 typedef struct				s_light {
 	t_vector3				pos;
 	double					intensity;
+	double					light_power_distance;
 	struct s_light			*next;
 }							t_light;
 

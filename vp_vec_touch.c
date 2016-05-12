@@ -23,7 +23,8 @@ void add_touch_to_vp_vec(t_screen_vec *vp_vec, t_scene_object *obj, t_vector3 or
 	// alloue et set les vals.
 	new_obj->touched_obj = obj;
 	new_obj->point = touch_point;
-	new_obj->color = obj->color;	
+	new_obj->color = obj->color;
+	new_obj->display_color = obj->color;
 
 	new_obj->distance = distance(origine, touch_point);
 	//printf("distance : %.4f \n", new_obj->distance);

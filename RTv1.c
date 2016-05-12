@@ -58,107 +58,84 @@ int set_color(double sum_vect) // set pixel color screen depending on vector sum
 
 void trace_black_screen(t_rt *rt) // pour remplir lecran de noir. => protect ecran non alloue.
 {
-	int scan_x;
-	int scan_y;
-	int i;
-	int color;
-
-	scan_x = 0;
-	scan_y = 0;
-	i = 0;
-	color = 0x000000;
-	while (scan_y < rt->screen_height) // pour chaque colonne.
+	rt->scan_x = 0;
+	rt->scan_y = 0;
+	rt->i = 0;
+	rt->color = 0x000000;
+	while (rt->scan_y < rt->screen_height) // pour chaque colonne.
 	{
-		while (scan_x < rt->screen_width) // pour chaque ligne de pixel.
+		while (rt->scan_x < rt->screen_width) // pour chaque ligne de pixel.
 		{
-			pixel_put_to_image(rt, scan_x, scan_y, color);
-			scan_x++;
-			i++;
+			pixel_put_to_image(rt, rt->scan_x, rt->scan_y, rt->color);
+			rt->scan_x++;
+			rt->i++;
 		}
-		scan_y++;
-		scan_x = 0;
+		rt->scan_y++;
+		rt->scan_x = 0;
 	}
 }
 
 void run_trough_objs(t_rt *rt, t_screen_vec *vp_vector)
 {
-	t_scene_object	*tmp;
-
-	tmp = rt->scene_objs;
+	rt->tmp = rt->scene_objs;
 
 	// parcourir tous les objs.
-	while (tmp) {
-		if (tmp->type == SPHERE) {
-			sphere_check(vp_vector, tmp, rt->camera.camera_obj->pos, vp_vector->v);
+	while (rt->tmp) {
+		if (rt->tmp->type == SPHERE) {
+			sphere_check(vp_vector, rt->tmp, rt->camera.camera_obj->pos, vp_vector->v);
 		}
-		else if (tmp->type == PLANE) {
-			plane_check(vp_vector, tmp, rt->camera.camera_obj->pos, vp_vector->v);
+		else if (rt->tmp->type == PLANE) {
+			plane_check(vp_vector, rt->tmp, rt->camera.camera_obj->pos, vp_vector->v);
 		}
-		tmp = tmp->next;
+		rt->tmp = rt->tmp->next;
 	}
 }
 
 void raytrace_objs(t_rt *rt) // pour calculer tous les objs
 {
-	int scan_x;
-	int scan_y;
-	int i;
-
-	scan_x = 0;
-	scan_y = 0;
-	i = 0;
+	rt->scan_x = 0;
+	rt->scan_y = 0;
+	rt->i = 0;
 	//color = 0x000000; // base color = black;
-	while (scan_y < rt->screen_height) // pour chaque colonne.
+	while (rt->scan_y < rt->screen_height) // pour chaque colonne.
 	{
-		while (scan_x < rt->screen_width) // pour chaque ligne de pixel.
+		while (rt->scan_x < rt->screen_width) // pour chaque ligne de pixel.
 		{
 			// fait le check du vec actuel pour chaque obj de la scene en fonction de son type.
 			// vecteur actuel == rt->vp_vectors[i]
 			// pour chaque obj, regarder le type, puis lenvoyer pour calculer dans l'algo correspondant.
-			run_trough_objs(rt, &(rt->vp_vectors[i]));	
-			scan_x++;
-			i++;
+			run_trough_objs(rt, &(rt->vp_vectors[rt->i]));
+			rt->scan_x++;
+			rt->i++;
 		}
-		scan_y++;
-		scan_x = 0;
+		rt->scan_y++;
+		rt->scan_x = 0;
 	}
 }
 
 void display_rt(t_rt *rt)
 {
-	int scan_x;
-	int scan_y;
-	int i;
-
-	scan_x = 0;
-	scan_y = 0;
-	i = 0;
-	//color = 0x000000; // base color = black;
-	while (scan_y < rt->screen_height) // pour chaque colonne.
+	rt->scan_x = 0;
+	rt->scan_y = 0;
+	rt->i = 0;
+	while (rt->scan_y < rt->screen_height) // pour chaque colonne.
 	{
-		while (scan_x < rt->screen_width) // pour chaque ligne de pixel.
+		while (rt->scan_x < rt->screen_width) // pour chaque ligne de pixel.
 		{
-			if (rt->vp_vectors[i].touched_objs_list == NULL) {
-				// no touch, put black;
-				pixel_put_to_image(rt, scan_x, scan_y, 0x000000);
+			if (rt->vp_vectors[rt->i].touched_objs_list == NULL) {
+				// no touch, put black; -> crash security;
+				pixel_put_to_image(rt, rt->scan_x, rt->scan_y, 0x000000);
 			}
-			else 
+			else
 			{
-				//t_scene_object	*closest_obj;
-				//closest_obj = get_closest_object(&(rt->vp_vectors[i]));
-				//pixel_put_to_image(rt, scan_x, scan_y, closest_obj->color);
-				pixel_put_to_image(rt, scan_x, scan_y, rt->vp_vectors[i].touched_objs_list->color);
+				pixel_put_to_image(rt, rt->scan_x, rt->scan_y, 
+					rt->vp_vectors[rt->i].touched_objs_list->display_color);
 			}
-			// fait le check du vec actuel pour chaque obj de la scene en fonction de son type.
-			// vecteur actuel == rt->vp_vectors[i]
-			// pour chaque obj, regarder le type, puis lenvoyer pour calculer dans l'algo correspondant.
-			
-			// sphere_check(rt, rt->camera.pos, vec_dir); // a changé.
-			scan_x++;
-			i++;
+			rt->scan_x++;
+			rt->i++;
 		}
-		scan_y++;
-		scan_x = 0;
+		rt->scan_y++;
+		rt->scan_x = 0;
 	}
 }
 
@@ -166,8 +143,9 @@ int ft_trace_rt(t_rt *rt)
 {
 	trace_black_screen(rt);
 	
-	raytrace_objs(rt);
-	calculate_shadows(rt);
+	
+	calculate_inner_shadows(rt);
+	calculate_casted_shadows(rt); // casted overrides inner.
 	display_rt(rt); // parcours les vec et affiche les colors.
 
 	return (0);
@@ -228,6 +206,18 @@ void calculate_viewplane(t_rt *rt)
 	rt->vp_upleft_pos.y = rt->camera.camera_obj->pos.y + rt->camera.camera_obj->dist_cam_screen;
 	rt->vp_upleft_pos.z = rt->camera.camera_obj->pos.z + 1.0;
 
+	//t_vector3 	vec_center = vec_dir(rt->camera.camera_obj->pos, rt->vp_center_pos);
+
+	/*
+	rt->vp_upleft_pos.x = rt->camera.camera_obj->pos.x - 1.0;
+	rt->vp_upleft_pos.y = rt->vp_center_pos.y - rt->camera.camera_obj->pos.y;
+	rt->vp_upleft_pos.y *= rt->vp_upleft_pos.y;
+	rt->vp_upleft_pos.y += 1.0;
+	rt->vp_upleft_pos.y = sqrt(rt->vp_upleft_pos.y);
+	rt->vp_upleft_pos.z = rt->camera.camera_obj->pos.z + 1.0;
+	*/
+
+
 
 	// CHECK LOGS //
 	// printf("rt->vp_center_pos : %f x, %f y, %f z;\n", rt->vp_center_pos.x, rt->vp_center_pos.y, rt->vp_center_pos.z);
@@ -238,6 +228,7 @@ void calculate_viewplane(t_rt *rt)
 	rt->vp_vectors[0].v.x = rt->vp_upleft_pos.x - rt->camera.camera_obj->pos.x;
 	rt->vp_vectors[0].v.y = rt->vp_upleft_pos.y - rt->camera.camera_obj->pos.y;
 	rt->vp_vectors[0].v.z = rt->vp_upleft_pos.z - rt->camera.camera_obj->pos.z;
+	
 	// printf("rt->vp_vectors[0] : %f x, %f y, %f z;\n", rt->vp_vectors[0].x, rt->vp_vectors[0].y, rt->vp_vectors[0].z);
 
 	// calcul des vectors pour chaque pixel de l'ecran.
@@ -247,16 +238,23 @@ void calculate_viewplane(t_rt *rt)
 	inc_x = 2.0 / (float)rt->screen_width;
 	inc_z = 2.0 / (float)rt->screen_height;
 	xref = rt->vp_upleft_pos.x;
-	yref = rt->vp_vectors[0].v.y;
+	yref = rt->vp_upleft_pos.y;
 	zref = rt->vp_upleft_pos.z;
 	while (y < rt->screen_height)
 	{
 		while (x < rt->screen_width)
 		{
 			xref += inc_x;
+
 			rt->vp_vectors[i].v.x = xref - rt->camera.camera_obj->pos.x;
-			rt->vp_vectors[i].v.y = yref;
+
+			rt->vp_vectors[i].v.y = yref - rt->camera.camera_obj->pos.y;
+			//rt->vp_vectors[i].v.y = sqrt(pow(rt->vp_center_pos.y - rt->camera.camera_obj->pos.y, 2) + pow((rt->vp_center_pos.x + xref) - rt->vp_center_pos.x, 2));
+
 			rt->vp_vectors[i].v.z = zref - rt->camera.camera_obj->pos.z;
+
+			/*rt->vp_vectors[i].v.z = sqrt(pow(rt->vp_center_pos.z - rt->camera.camera_obj->pos.z, 2) + pow((rt->vp_center_pos.z + zref) - rt->vp_center_pos.z, 2));*/
+
 			rt->vp_vectors[i].touched_objs_list = NULL;
 			i++;
 			x++;
@@ -269,7 +267,7 @@ void calculate_viewplane(t_rt *rt)
 	/*i = 0;
 	int  sc_size = rt->screen_height * rt->screen_width;
 	while (i < sc_size) {
-		printf("VLength = %f \n", vector_length(rt->vp_vectors[i].v));
+		printf("YLength = %f \n", rt->vp_vectors[i].v.y);
 		i++;
 	}*/
 	// printf("rt->vp_vectors[last] : %f x, %f y, %f z;\n", rt->vp_vectors[400 + 200 * 400].x, rt->vp_vectors[400 + 200 * 400].y, rt->vp_vectors[400 + 200 * 400].z);
@@ -338,8 +336,8 @@ void init_var(t_rt *rt) // Definir scene.
 
 	// --- LIGHT
 	//pos = set_vec3(-1.5, 5.0, 2.0);
-	pos = set_vec3(0.0, 0.0, 0.0);
-	add_light_to_scene(rt, pos, 1.0);
+	pos = set_vec3(-3.0, 5.0, 2.0);
+	add_light_to_scene(rt, pos, 1.0, 15.0);
 
 	// --- SPHERES 
 	
@@ -363,13 +361,13 @@ void init_var(t_rt *rt) // Definir scene.
 	add_plane_to_scene(rt, pos, normale, 0x669999); // plan vert
 	
 	// adding plane //
-	//normale = set_vec3(1.0, 0.0, 0.0);
-	//pos = set_vec3(0.0, 0.0, 0.0);
-	//add_plane_to_scene(rt, pos, normale, 0x6699FF); // plan bleu
+	normale = set_vec3(1.0, 0.0, 0.0);
+	pos = set_vec3(2.0, 6.0, 0.0);
+	add_plane_to_scene(rt, pos, normale, 0x6699FF); // plan bleu
 
 	// adding plane //
 	normale = set_vec3(0.0, 1.0, 0.0);
-	pos = set_vec3(0.0, 100, 0.0);
+	pos = set_vec3(0.0, 10.0, 0.0);
 	add_plane_to_scene(rt, pos, normale, 0x663366); // plan violet
 
 	// DEBUG ---------- //
@@ -412,7 +410,8 @@ void init_mlx(t_rt *rt)
 	rt->imgv = mlx_new_image(rt->mlx, rt->screen_width, rt->screen_height);
 	rt->img = mlx_get_data_addr(rt->imgv, &rt->bpp, &rt->sizeline, &rt->endian);
 
-	ft_trace_rt(rt);
+	raytrace_objs(rt);
+//	ft_trace_rt(rt);
 
 	mlx_expose_hook(rt->win, expose_hook, rt);
 	//mlx_hook(rt->win, 2, (1L<<0), &key_press, rt); // ????? ne semble pas marcher.

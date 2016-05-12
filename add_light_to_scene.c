@@ -13,7 +13,7 @@
 
 #include "RTv1.h"
 
-void add_light_to_scene(t_rt *rt, t_vector3 pos, float intensity)
+void add_light_to_scene(t_rt *rt, t_vector3 pos, double intensity, double light_power_distance)
 {
 	t_light	*new_light;
 	t_light	*tmp;
@@ -23,7 +23,7 @@ void add_light_to_scene(t_rt *rt, t_vector3 pos, float intensity)
 	
 	new_light->pos = pos;
 	new_light->intensity = intensity;
-
+	new_light->light_power_distance = light_power_distance;
 	//add maillon to list;
 	if (rt->scene_lights == NULL) // si liste null;
 	{

@@ -23,7 +23,8 @@ utils_vec.c \
 utils_angles.c \
 utils_objects.c \
 vp_vec_touch.c \
-shadows.c
+shadows.c \
+shadows_inner.c
 
 OBJ = $(SRC:.c=.o)
 
