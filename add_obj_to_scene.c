@@ -14,7 +14,7 @@
 #include <stdio.h>
 
 
-void add_sphere_to_scene(t_rt *rt, t_vector3 centre, double diametre, double radius, int color)
+void add_sphere_to_scene(t_rt *rt, t_vector3 centre, double radius, int color)
 {
 	t_scene_object	*new_obj;
 	t_scene_object	*tmp;
@@ -26,9 +26,9 @@ void add_sphere_to_scene(t_rt *rt, t_vector3 centre, double diametre, double rad
 	new_obj->color = color;
 	new_obj->sphere_obj = (t_sphere *)malloc(sizeof(t_sphere)); // alloue l'obj.
 	new_obj->sphere_obj->pos = centre;
-	new_obj->sphere_obj->diametre = diametre;
 	new_obj->sphere_obj->radius = radius;
-
+	new_obj->sphere_obj->diametre = radius * 2.0;
+	rt->last_added_obj = new_obj;
 	//add maillon to list;
 	if (rt->scene_objs == NULL) // si liste null;
 	{
@@ -58,6 +58,7 @@ void add_plane_to_scene(t_rt *rt, t_vector3 point, t_vector3 normale, int color)
 	new_obj->plane_obj = (t_plane *)malloc(sizeof(t_plane)); // alloue l'obj.
 	new_obj->plane_obj->point = point;
 	new_obj->plane_obj->normale = normale;
+	rt->last_added_obj = new_obj;
 
 	// Add maillon to list;
 	if (rt->scene_objs == NULL) // si liste null;

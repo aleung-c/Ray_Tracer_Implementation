@@ -336,39 +336,43 @@ void init_var(t_rt *rt) // Definir scene.
 
 	// --- LIGHT
 	//pos = set_vec3(-1.5, 5.0, 2.0);
-	pos = set_vec3(-3.0, 5.0, 2.0);
-	add_light_to_scene(rt, pos, 1.0, 15.0);
+	pos = set_vec3(-3.0, 5.0, 2.5);
+	add_light_to_scene(rt, pos, 1.0, 20.0);
 
 	// --- SPHERES 
 	
 	// adding sphere //
-	//pos = set_vec3(0.5, 5.0, 1.0);
-	//add_sphere_to_scene(rt, pos, 2.0, 2.0, 0x006600); // sphere verte
+	//pos = set_vec3(0.5, 5.0, 0.4);
+	//add_sphere_to_scene(rt, pos, 0.2, 0x006600); // sphere verte
 	
 	// adding sphere //
 	pos = set_vec3(2.0, 5.0, 2.0);
-	add_sphere_to_scene(rt, pos, 1.0, 1.0, 0x0066FF); // sphere bleu
-	
+	add_sphere_to_scene(rt, pos, 1.0, 0x0066FF); // sphere bleu
+	SetObjectId(rt->last_added_obj, 1);
+
 	// adding sphere //
 	pos = set_vec3(-0.5, 5.0, 2.0);
-	add_sphere_to_scene(rt, pos, 1.0, 0.5, 0x660000); // sphere rouge
-
+	add_sphere_to_scene(rt, pos, 0.5, 0x660000); // sphere rouge
+	SetObjectId(rt->last_added_obj, 2);
 	// --- PLANES //
 	
 	// adding plane //
 	normale = set_vec3(0.0, 0.0, 1.0);
 	pos = set_vec3(0.0, 0.0, 0.0);
 	add_plane_to_scene(rt, pos, normale, 0x669999); // plan vert
+	SetObjectId(rt->last_added_obj, 3);
 	
 	// adding plane //
 	normale = set_vec3(1.0, 0.0, 0.0);
 	pos = set_vec3(2.0, 6.0, 0.0);
 	add_plane_to_scene(rt, pos, normale, 0x6699FF); // plan bleu
+	SetObjectId(rt->last_added_obj, 4);
 
 	// adding plane //
 	normale = set_vec3(0.0, 1.0, 0.0);
 	pos = set_vec3(0.0, 10.0, 0.0);
 	add_plane_to_scene(rt, pos, normale, 0x663366); // plan violet
+	SetObjectId(rt->last_added_obj, 5);
 
 	// DEBUG ---------- //
 	// OBJ DEBUG

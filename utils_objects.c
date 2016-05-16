@@ -22,6 +22,16 @@ char		*GetObjectName(t_scene_object *Obj)
 	return (ft_strdup(Obj->name));
 }
 
+void		SetObjectId(t_scene_object *Obj, int Id)
+{
+	Obj->id = Id;
+}
+
+int			GetObjectId(t_scene_object *Obj)
+{
+	return (Obj->id);
+}
+
 char		*GetObjectType(t_scene_object *Obj)
 {
 	char *RetType;

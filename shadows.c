@@ -47,57 +47,83 @@ void		run_trough_lights_shadows(t_rt *rt, t_screen_vec *vp_vector)
 	// parcourir toutes les lights.
 	while (cur_light)
 	{
+		check_is_in_shadow(rt, vp_vector, cur_light);
 		// pour chaque light.
-		if (check_is_in_shadow(rt, vp_vector, cur_light) == 1)
+		/*if (check_is_in_shadow(rt, vp_vector, cur_light) == 1)
 		{
 			// isinshadow
 			if (vp_vector->touched_objs_list != NULL) { 
 				vp_vector->touched_objs_list->display_color = 0x000000;
 			} // si no obj touche, reste noir.
 			
-		}
+		}*/
 		cur_light = cur_light->next;
 	}
 }
 
 // for each object
-int check_is_in_shadow(t_rt *rt, t_screen_vec *vp_vector, t_light *cur_light)
+void check_is_in_shadow(t_rt *rt, t_screen_vec *vp_vector, t_light *cur_light)
 {
-	t_scene_object	*tmp;
-	t_vector3		vec_direction;
+	t_scene_object		*tmp;
+	int					in_shadow;
+	t_rgb				rgb_color;
+	int					color_to_set;
 
-	if (vp_vector->touched_objs_list != NULL) // protect segfault
+	in_shadow = 0;
+	if (vp_vector->touched_objs_list == NULL) // protect segfault
 	{
-		vec_direction = vec_dir(vp_vector->touched_objs_list->point, cur_light->pos);
+		return ; // no obj, dont touch the color.
 	}
-	else
-	{
-		return (0); // no obj, dont touch the color.
-	}
-	// vec_direction = normalize_vector(vec_direction);
 	tmp = rt->scene_objs;
 
 	// parcourir tous les objs.
 	while (tmp)
 	{
-		//printf ("shadowcheck : tmp = %p \n touchedobj = %p \n", tmp, vp_vector->touched_objs_list->touched_obj);
+		// TODO : empecher l'ombre sur le meme obj;
+			if (tmp->type == SPHERE && tmp != vp_vector->touched_objs_list->touched_obj)
+			{
+				if (sphere_check_touch(tmp, cur_light, vp_vector) == 1)
+				{
+					/*if (vp_vector->touched_objs_list->touched_obj->id == 2)
+					printf("sphere nb %d touche sphere %d\n", vp_vector->touched_objs_list->touched_obj->id, tmp->id);*/
+					// divise la couleur pour l'ombrager
+					rgb_color.r = (((vp_vector->touched_objs_list->display_color >> 16) & 0xFF));
+					rgb_color.g = (((vp_vector->touched_objs_list->display_color >> 8) & 0xFF));
+					rgb_color.b = (((vp_vector->touched_objs_list->display_color) & 0xFF));
 
-		if (tmp != vp_vector->touched_objs_list->touched_obj) // -> Tested = OK;
-		{
-			if (tmp->type == SPHERE)
-			{
-				if (sphere_check_touch(tmp,
-					vp_vector->touched_objs_list->point, vec_direction) == 1)
-					return (1);
+					rgb_color.r /= 3;
+					rgb_color.g /= 3;
+					rgb_color.b /= 3;
+
+					color_to_set =
+					((rgb_color.r & 0xff) << 16) +
+					((rgb_color.g & 0xff) << 8) +
+					(rgb_color.b & 0xff);
+
+					vp_vector->touched_objs_list->display_color = color_to_set;
+				}
 			}
-			/*else if (tmp->type == PLANE)
+			if (tmp->type == PLANE && tmp != vp_vector->touched_objs_list->touched_obj)
 			{
-				if (plane_check_touch(tmp,
-					vp_vector->touched_objs_list->point, vec_direction) == 1)
-					return (1);
-			}*/
-		}
+				if (plane_check_touch(tmp, cur_light, vp_vector) == 1)
+				{
+					rgb_color.r = (((vp_vector->touched_objs_list->display_color >> 16) & 0xFF));
+					rgb_color.g = (((vp_vector->touched_objs_list->display_color >> 8) & 0xFF));
+					rgb_color.b = (((vp_vector->touched_objs_list->display_color) & 0xFF));
+
+					rgb_color.r /= 3;
+					rgb_color.g /= 3;
+					rgb_color.b /= 3;
+
+					color_to_set =
+					((rgb_color.r & 0xff) << 16) +
+					((rgb_color.g & 0xff) << 8) +
+					(rgb_color.b & 0xff);
+
+					vp_vector->touched_objs_list->display_color = color_to_set;
+				}
+			}
+		//}
 		tmp = tmp->next;
 	}
-	return (0);
 }

@@ -28,6 +28,7 @@
 // struct d'un objet.
 typedef struct				s_scene_object {
 	char					*name;
+	int						id;
 	t_obj_type				type;
 	int						color;
 
@@ -97,6 +98,7 @@ typedef struct				s_rt
 	int						scan_y;
 	int						i;
 	int						color;
+	t_scene_object			*last_added_obj;
 }							t_rt;
 
 typedef struct s_rgb 
@@ -110,10 +112,9 @@ typedef struct s_rgb
 
 void						add_light_to_scene(t_rt *rt, t_vector3 pos, double intensity, double light_power_distance);
 
-void						add_sphere_to_scene(t_rt *rt, t_vector3 centre, double diametre, double radius, int color);
+void						add_sphere_to_scene(t_rt *rt, t_vector3 centre, double radius, int color);
 void						sphere_check(t_screen_vec *vp_vec, t_scene_object *obj, t_vector3 origine, t_vector3 vec_dir);
-int							sphere_check_touch(t_scene_object *obj,
-								t_vector3 origine, t_vector3 vec_dir);
+int							sphere_check_touch(t_scene_object *obj, t_light *cur_light, t_screen_vec *vp_vector);
 
 void						algo_touching_sphere(t_sphere_algo *algo, t_scene_object *obj,
 								t_vector3 origine, t_vector3 vec_dir);
@@ -122,15 +123,14 @@ void						algo_sphere_touched(t_sphere_algo *algo, t_vector3 origine, t_vector3 
 void						add_plane_to_scene(t_rt *rt, t_vector3 point, t_vector3 normale, int color);
 void						plane_check(t_screen_vec *vp_vec, t_scene_object *obj, t_vector3 origine,
 								t_vector3 vec_dir);
-int							plane_check_touch(t_scene_object *obj, t_vector3 origine,
-								t_vector3 vec_dir);
+int							plane_check_touch(t_scene_object *obj, t_light *cur_light, t_screen_vec *vp_vector);
 
 void						add_touch_to_vp_vec(t_screen_vec *vp_vec, t_scene_object *obj, t_vector3 origine, t_vector3 touch_point);
 t_scene_object				*get_closest_object(t_screen_vec *vp_vec);
 
 void						calculate_casted_shadows(t_rt *rt);
 void						run_trough_lights_shadows(t_rt *rt, t_screen_vec *vp_vector);
-int							check_is_in_shadow(t_rt *rt, t_screen_vec *vp_vector, t_light *cur_light);
+void						check_is_in_shadow(t_rt *rt, t_screen_vec *vp_vector, t_light *cur_light);
 
 void						calculate_inner_shadows(t_rt *rt);
 void						run_trough_lights_inner_shadows(t_rt *rt, t_screen_vec *vp_vector);
@@ -145,14 +145,16 @@ t_vector3					point_from_vecdir(t_vector3 origine, t_vector3 vec_dir);
 t_vector3					normalize_vector(t_vector3);
 double						norme(t_vector3 v);
 t_vector3					vec_dir(t_vector3 origine, t_vector3 destination);
-
+t_vector3					vec_dir_distance_normalized(t_vector3 origine, t_vector3 destination);
 // utils_angles.c
 double						angle_check(double angle);
 int							angle_rev(int angle);
 
 // utils_obj.c
 void						SetObjectName(t_scene_object *Obj, char *Str);
+void						SetObjectId(t_scene_object *Obj, int Id);
 char						*GetObjectName(t_scene_object *Obj);
 char						*GetObjectType(t_scene_object *Obj);
+int							GetObjectId(t_scene_object *Obj);
 
 #endif
