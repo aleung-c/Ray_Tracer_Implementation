@@ -80,12 +80,23 @@ void run_trough_objs(t_rt *rt, t_screen_vec *vp_vector)
 	rt->tmp = rt->scene_objs;
 
 	// parcourir tous les objs.
-	while (rt->tmp) {
-		if (rt->tmp->type == SPHERE) {
+	while (rt->tmp)
+	{
+		if (rt->tmp->type == SPHERE)
+		{
 			sphere_check(vp_vector, rt->tmp, rt->camera.camera_obj->pos, vp_vector->v);
 		}
-		else if (rt->tmp->type == PLANE) {
+		else if (rt->tmp->type == PLANE)
+		{
 			plane_check(vp_vector, rt->tmp, rt->camera.camera_obj->pos, vp_vector->v);
+		}
+		else if (rt->tmp->type == CYLINDER)
+		{
+			cylinder_check(vp_vector, rt->tmp, rt->camera.camera_obj->pos, vp_vector->v);
+		}
+		else if (rt->tmp->type == CONE)
+		{
+			cone_check(vp_vector, rt->tmp, rt->camera.camera_obj->pos, vp_vector->v);
 		}
 		rt->tmp = rt->tmp->next;
 	}
@@ -140,14 +151,8 @@ void display_rt(t_rt *rt)
 }
 
 int ft_trace_rt(t_rt *rt)
-{
-	trace_black_screen(rt);
-	
-	
-	calculate_inner_shadows(rt);
-	calculate_casted_shadows(rt); // casted overrides inner.
+{	
 	display_rt(rt); // parcours les vec et affiche les colors.
-
 	return (0);
 }
 
@@ -160,157 +165,7 @@ int		expose_hook(t_rt *rt)
 	return (ret);
 }
 
-void calculate_viewplane(t_rt *rt)
-{
-	int y;
-	int x;
-	int i;
-	double xref;
-	double yref;
-	double zref;
-	double inc_x;
-	double inc_z;
-	// pas besoin du y, l'ecran est plat.
 
-	// remplir le viewplane positioning en dur avant de le rotate avec une matrice 
-	// qui prendra l'angle en compte.
-	
-	// *** Y avance, X strafe, Z altitude. **** //
-	
-	// cam est a 1.0 1.0 1.0 au debut.
-	// angle est a 0.0, 0.0, 0.0 ;
-	// screen est de 400 x 000.
-
-	// calcul des points interessants du viewplane.
-	// vecteur point central = pos_cam - pos_cam avec y+dist to screen;
-	rt->vp_center_pos.x = rt->camera.camera_obj->pos.x;
-	rt->vp_center_pos.y = rt->camera.camera_obj->pos.y + rt->camera.camera_obj->dist_cam_screen;
-	rt->vp_center_pos.z = rt->camera.camera_obj->pos.z;
-
-	/*rt->vp_up_pos.x = rt->camera.camera_obj->pos.x;
-	rt->vp_up_pos.y = rt->camera.camera_obj->pos.y + rt->camera.camera_obj->dist_cam_screen;
-	rt->vp_up_pos.z = rt->camera.camera_obj->pos.z + 1.0;
-
-	rt->vp_right_pos.x = rt->camera.camera_obj->pos.x + 1.0;
-	rt->vp_right_pos.y = rt->camera.camera_obj->pos.y + rt->camera.camera_obj->dist_cam_screen;
-	rt->vp_right_pos.z = rt->camera.camera_obj->pos.z;*/
-
-	float vecdir_cam_screen_y = rt->vp_center_pos.y - rt->camera.camera_obj->pos.y;
-
-	vecdir_cam_screen_y *= vecdir_cam_screen_y; // au carre. longueur au carre
-	vecdir_cam_screen_y += 1.0; // == largeur de la moitie de lecran en fonction de x au carre
-	vecdir_cam_screen_y = sqrt(vecdir_cam_screen_y);
-
-
-	rt->vp_upleft_pos.x = rt->camera.camera_obj->pos.x - 1.0;
-	rt->vp_upleft_pos.y = rt->camera.camera_obj->pos.y + rt->camera.camera_obj->dist_cam_screen;
-	rt->vp_upleft_pos.z = rt->camera.camera_obj->pos.z + 1.0;
-
-	//t_vector3 	vec_center = vec_dir(rt->camera.camera_obj->pos, rt->vp_center_pos);
-
-	/*
-	rt->vp_upleft_pos.x = rt->camera.camera_obj->pos.x - 1.0;
-	rt->vp_upleft_pos.y = rt->vp_center_pos.y - rt->camera.camera_obj->pos.y;
-	rt->vp_upleft_pos.y *= rt->vp_upleft_pos.y;
-	rt->vp_upleft_pos.y += 1.0;
-	rt->vp_upleft_pos.y = sqrt(rt->vp_upleft_pos.y);
-	rt->vp_upleft_pos.z = rt->camera.camera_obj->pos.z + 1.0;
-	*/
-
-
-
-	// CHECK LOGS //
-	// printf("rt->vp_center_pos : %f x, %f y, %f z;\n", rt->vp_center_pos.x, rt->vp_center_pos.y, rt->vp_center_pos.z);
-	// printf("rt->vp_up_pos : %f x, %f y, %f z;\n", rt->vp_up_pos.x, rt->vp_up_pos.y, rt->vp_up_pos.z);
-	// printf("rt->vp_right_pos : %f x, %f y, %f z;\n", rt->vp_right_pos.x, rt->vp_right_pos.y, rt->vp_right_pos.z);
-	// printf("rt->vp_upleft_pos : %f x, %f y, %f z;\n", rt->vp_upleft_pos.x, rt->vp_upleft_pos.y, rt->vp_upleft_pos.z);
-
-	rt->vp_vectors[0].v.x = rt->vp_upleft_pos.x - rt->camera.camera_obj->pos.x;
-	rt->vp_vectors[0].v.y = rt->vp_upleft_pos.y - rt->camera.camera_obj->pos.y;
-	rt->vp_vectors[0].v.z = rt->vp_upleft_pos.z - rt->camera.camera_obj->pos.z;
-	
-	// printf("rt->vp_vectors[0] : %f x, %f y, %f z;\n", rt->vp_vectors[0].x, rt->vp_vectors[0].y, rt->vp_vectors[0].z);
-
-	// calcul des vectors pour chaque pixel de l'ecran.
-	y = 0;
-	x = 1;
-	i = 1;
-	inc_x = 2.0 / (float)rt->screen_width;
-	inc_z = 2.0 / (float)rt->screen_height;
-	xref = rt->vp_upleft_pos.x;
-	yref = rt->vp_upleft_pos.y;
-	zref = rt->vp_upleft_pos.z;
-	while (y < rt->screen_height)
-	{
-		while (x < rt->screen_width)
-		{
-			xref += inc_x;
-
-			rt->vp_vectors[i].v.x = xref - rt->camera.camera_obj->pos.x;
-
-			rt->vp_vectors[i].v.y = yref - rt->camera.camera_obj->pos.y;
-			//rt->vp_vectors[i].v.y = sqrt(pow(rt->vp_center_pos.y - rt->camera.camera_obj->pos.y, 2) + pow((rt->vp_center_pos.x + xref) - rt->vp_center_pos.x, 2));
-
-			rt->vp_vectors[i].v.z = zref - rt->camera.camera_obj->pos.z;
-
-			/*rt->vp_vectors[i].v.z = sqrt(pow(rt->vp_center_pos.z - rt->camera.camera_obj->pos.z, 2) + pow((rt->vp_center_pos.z + zref) - rt->vp_center_pos.z, 2));*/
-
-			rt->vp_vectors[i].touched_objs_list = NULL;
-			i++;
-			x++;
-		}
-		xref = rt->vp_upleft_pos.x;
-		zref -= inc_z; // changement de hauteur de colonne, donc baisser le z
-		x = 0;
-		y++;
-	}
-	/*i = 0;
-	int  sc_size = rt->screen_height * rt->screen_width;
-	while (i < sc_size) {
-		printf("YLength = %f \n", rt->vp_vectors[i].v.y);
-		i++;
-	}*/
-	// printf("rt->vp_vectors[last] : %f x, %f y, %f z;\n", rt->vp_vectors[400 + 200 * 400].x, rt->vp_vectors[400 + 200 * 400].y, rt->vp_vectors[400 + 200 * 400].z);
-}
-
-void rotate_viewplane(t_rt *rt) // Incomplet, non fonctionnel.
-{
-	int y;
-	int x;
-	int i;
-
-	y = 0;
-	x = 0;
-	i = 0;
-	while (y < rt->screen_height)
-	{
-		while (x < rt->screen_width)
-		{
-			rt->vp_vectors[i].v.x = ((rt->vp_vectors[i].v.x * cos(rt->camera.camera_obj->euler_angles.x)) + (rt->vp_vectors[i].v.y - sin(rt->camera.camera_obj->euler_angles.y)) + 0);
-			rt->vp_vectors[i].v.y = ((rt->vp_vectors[i].v.x * sin(rt->camera.camera_obj->euler_angles.x)) + (rt->vp_vectors[i].v.y * cos(rt->camera.camera_obj->euler_angles.y)) + 0);
-			rt->vp_vectors[i].v.z = (0 + 0 + rt->vp_vectors[i].v.z * 1);
-
-			// //rotate x ;
-			// rt->vp_vectors[i].x = ((rt->vp_vectors[i].x * 1) + (rt->vp_vectors[i].y * 0) + (rt->vp_vectors[i].y * 0));
-			// rt->vp_vectors[i].y = ((rt->vp_vectors[i].x * 0) + (rt->vp_vectors[i].y * cos(rt->cam_angle_x)) + (rt->vp_vectors[i].y - sin(rt->cam_angle_x)));
-			// rt->vp_vectors[i].z = ((rt->vp_vectors[i].x * 0) + (rt->vp_vectors[i].y * sin(rt->cam_angle_x)) + (rt->vp_vectors[i].y * cos(rt->cam_angle_x)));
-			// //rotate y ;
-			// rt->vp_vectors[i].x = ((rt->vp_vectors[i].x * cos(rt->cam_angle_y)) + (rt->vp_vectors[i].y * 0) + (rt->vp_vectors[i].y * sin(rt->cam_angle_y)));
-			// rt->vp_vectors[i].y = ((rt->vp_vectors[i].x * 0) + (rt->vp_vectors[i].y * 1) + (rt->vp_vectors[i].y * 0));
-			// rt->vp_vectors[i].z = ((rt->vp_vectors[i].x - sin(rt->cam_angle_y)) + (rt->vp_vectors[i].y * 0) + (rt->vp_vectors[i].y * cos(rt->cam_angle_y)));
-			// //rotate z ;
-			// rt->vp_vectors[i].x = ((rt->vp_vectors[i].x * cos(rt->cam_angle_z)) + (rt->vp_vectors[i].y - sin(rt->cam_angle_z)) + (rt->vp_vectors[i].y * 0));
-			// rt->vp_vectors[i].y = ((rt->vp_vectors[i].x * sin(rt->cam_angle_z)) + (rt->vp_vectors[i].y * cos(rt->cam_angle_z)) + (rt->vp_vectors[i].y * 0));
-			// rt->vp_vectors[i].z = ((rt->vp_vectors[i].x * 0) + (rt->vp_vectors[i].y * 0) + (rt->vp_vectors[i].y * 1));
-			i++;
-			x++;
-		}
-		x = 0;
-		y++;
-	}
-	printf("rotate -\nrt->vp_vectors[last] : %f x, %f y, %f z;\n",
-	rt->vp_vectors[400 + 200 * 400].v.x, rt->vp_vectors[400 + 200 * 400].v.y, rt->vp_vectors[400 + 200 * 400].v.z);
-}
 
 void init_var(t_rt *rt) // Definir scene.
 {
@@ -336,8 +191,8 @@ void init_var(t_rt *rt) // Definir scene.
 
 	// --- LIGHT
 	//pos = set_vec3(-1.5, 5.0, 2.0);
-	pos = set_vec3(-3.0, 5.0, 2.5);
-	add_light_to_scene(rt, pos, 1.0, 20.0);
+	pos = set_vec3(-4.0, 5.0, 2.0);
+	add_light_to_scene(rt, pos, 1.0, 10.0);
 
 	// --- SPHERES 
 	
@@ -346,12 +201,12 @@ void init_var(t_rt *rt) // Definir scene.
 	//add_sphere_to_scene(rt, pos, 0.2, 0x006600); // sphere verte
 	
 	// adding sphere //
-	pos = set_vec3(2.0, 5.0, 2.0);
+	pos = set_vec3(1.0, 5.0, 2.0);
 	add_sphere_to_scene(rt, pos, 1.0, 0x0066FF); // sphere bleu
 	SetObjectId(rt->last_added_obj, 1);
 
 	// adding sphere //
-	pos = set_vec3(-0.5, 5.0, 2.0);
+	pos = set_vec3(-1.0, 5.0, 2.0);
 	add_sphere_to_scene(rt, pos, 0.5, 0x660000); // sphere rouge
 	SetObjectId(rt->last_added_obj, 2);
 	// --- PLANES //
@@ -373,6 +228,17 @@ void init_var(t_rt *rt) // Definir scene.
 	pos = set_vec3(0.0, 10.0, 0.0);
 	add_plane_to_scene(rt, pos, normale, 0x663366); // plan violet
 	SetObjectId(rt->last_added_obj, 5);
+
+	// adding cylinder
+	pos = set_vec3(4.0, 5.0, 2.0);
+	add_cylinder_to_scene(rt, pos, 0.5, 0xFF9966); // cylindre peche
+	SetObjectId(rt->last_added_obj, 6);
+
+	// adding cone
+	pos = set_vec3(2.5, 5.0, 2.0);
+	add_cone_to_scene(rt, pos, 0.2, 0xCC9900); // cone jaune
+	SetObjectId(rt->last_added_obj, 7);
+
 
 	// DEBUG ---------- //
 	// OBJ DEBUG
@@ -414,7 +280,11 @@ void init_mlx(t_rt *rt)
 	rt->imgv = mlx_new_image(rt->mlx, rt->screen_width, rt->screen_height);
 	rt->img = mlx_get_data_addr(rt->imgv, &rt->bpp, &rt->sizeline, &rt->endian);
 
+	// Raytracing once;
+	trace_black_screen(rt);
 	raytrace_objs(rt);
+	calculate_inner_shadows(rt);
+	calculate_casted_shadows(rt); // casted overrides inner.
 //	ft_trace_rt(rt);
 
 	mlx_expose_hook(rt->win, expose_hook, rt);

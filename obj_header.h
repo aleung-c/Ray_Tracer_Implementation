@@ -56,12 +56,11 @@ typedef struct				s_light {
 // SPHERE
 typedef struct				s_sphere
 {
-	t_vector3				pos; // x y z
+	t_vector3				pos;
 	double					diametre;
 	double					radius;
 }							t_sphere;
 
-// struct avc vals de calculs pour passer la norme.
 typedef	struct				s_sphere_algo {
 	double					a;
 	double					b;
@@ -89,13 +88,48 @@ typedef	struct				s_plane_algo {
 
 // CYLINDER
 typedef struct				s_cylinder {
-
-
+	t_vector3				pos;
+	double					radius;
+	double					rot[3][3];
 }							t_cylinder;
+
+typedef	struct				s_cylinder_algo {
+	double					a;
+	double					b;
+	double					c;
+
+	double					det; // determinant du calcul effectué, pour trouver surface de la sphere.
+	double					t; //  calcul pour trouver la position du point sur la sphere par rapport au ray lancé.
+	double					dist;
+
+	t_vector3				vec_rotated;
+	t_vector3				origine_rotated;
+
+	// point from origin to t.
+	t_vector3				tpoint;
+}							t_cylinder_algo;
 
 // CONE
 typedef struct				s_cone {
-	
+	t_vector3				pos;
+	double					angle;
+	double					rot[3][3];
 }							t_cone;
+
+typedef struct				s_cone_algo {
+	double					a;
+	double					b;
+	double					c;
+
+	double					det; // determinant du calcul effectué, pour trouver surface de la sphere.
+	double					t; //  calcul pour trouver la position du point sur la sphere par rapport au ray lancé.
+	double					dist;
+
+	t_vector3				vec_rotated;
+	t_vector3				origine_rotated;
+
+		// point from origin to t.
+	t_vector3				tpoint;
+}							t_cone_algo;
 
 #endif

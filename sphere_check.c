@@ -76,7 +76,7 @@ int		sphere_check_touch(t_scene_object *obj, t_light *cur_light, t_screen_vec *v
 	double				dist_to_obj;
 	t_vector3			vec_direction;
 
-	vec_direction = vec_dir(vp_vector->touched_objs_list->point, cur_light->pos);
+	vec_direction = vec_dir_distance_normalized(vp_vector->touched_objs_list->point, cur_light->pos);
 	algo_touching_sphere(&algo, obj, vp_vector->touched_objs_list->point, vec_direction);
 	if (algo.det > 0.0)
 	{

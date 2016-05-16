@@ -101,31 +101,67 @@ typedef struct				s_rt
 	t_scene_object			*last_added_obj;
 }							t_rt;
 
-typedef struct s_rgb 
+typedef struct				s_rgb 
 {
 	int						r;
 	int						g;
 	int						b;
-}				t_rgb;
+}							t_rgb;
 
 // protos
 
+void						calculate_viewplane(t_rt *rt);
+
+t_scene_object				*clean_obj(t_scene_object	*new_obj);
 void						add_light_to_scene(t_rt *rt, t_vector3 pos, double intensity, double light_power_distance);
+
 
 void						add_sphere_to_scene(t_rt *rt, t_vector3 centre, double radius, int color);
 void						sphere_check(t_screen_vec *vp_vec, t_scene_object *obj, t_vector3 origine, t_vector3 vec_dir);
 int							sphere_check_touch(t_scene_object *obj, t_light *cur_light, t_screen_vec *vp_vector);
-
 void						algo_touching_sphere(t_sphere_algo *algo, t_scene_object *obj,
-								t_vector3 origine, t_vector3 vec_dir);
+													t_vector3 origine, t_vector3 vec_dir);
 void						algo_sphere_touched(t_sphere_algo *algo, t_vector3 origine, t_vector3 vec_dir);
+
 
 void						add_plane_to_scene(t_rt *rt, t_vector3 point, t_vector3 normale, int color);
 void						plane_check(t_screen_vec *vp_vec, t_scene_object *obj, t_vector3 origine,
 								t_vector3 vec_dir);
-int							plane_check_touch(t_scene_object *obj, t_light *cur_light, t_screen_vec *vp_vector);
+void						algo_touching_plane (t_plane_algo *algo, t_scene_object *obj,
+													t_vector3 origine, t_vector3 vec_dir);
+void						algo_plane_touched(t_plane_algo *algo, t_vector3 origine,
+												t_vector3 vec_dir);
+int							plane_check_touch(t_scene_object *obj, t_light *cur_light,
+												t_screen_vec *vp_vector);
 
-void						add_touch_to_vp_vec(t_screen_vec *vp_vec, t_scene_object *obj, t_vector3 origine, t_vector3 touch_point);
+
+void						add_cylinder_to_scene(t_rt *rt, t_vector3 point, double radius, int color);
+void						cylinder_check(t_screen_vec *vp_vec, t_scene_object *obj, t_vector3 origine,
+											t_vector3 vec_dir);
+void						algo_touching_cylinder(t_cylinder_algo *algo, t_scene_object *obj,
+													t_vector3 origine, t_vector3 vec_dir);
+void						algo_cylinder_touched(t_cylinder_algo *algo, t_vector3 origine,
+													t_vector3 vec_dir);
+int							cylinder_check_touch(t_scene_object *obj, t_light *cur_light,
+													t_screen_vec *vp_vector);
+
+
+void						add_cone_to_scene(t_rt *rt, t_vector3 point, double angle, int color);
+void						cone_check(t_screen_vec *vp_vec, t_scene_object *obj,
+										t_vector3 origine, t_vector3 vec_dir);
+void						algo_touching_cone(t_cone_algo *algo, t_scene_object *obj,
+												t_vector3 origine, t_vector3 vec_dir);
+void						algo_cone_touched(t_cone_algo *algo, t_vector3 origine,
+												t_vector3 vec_dir);
+int							cone_check_touch(t_scene_object *obj, t_light *cur_light, 
+												t_screen_vec *vp_vector);
+
+
+
+void						add_obj_to_scene_list(t_rt *rt, t_scene_object *obj_to_add);
+
+void						add_touch_to_vp_vec(t_screen_vec *vp_vec, t_scene_object *obj,
+													t_vector3 origine, t_vector3 touch_point);
 t_scene_object				*get_closest_object(t_screen_vec *vp_vec);
 
 void						calculate_casted_shadows(t_rt *rt);
@@ -144,6 +180,7 @@ t_vector3					point_from_vecdir(t_vector3 origine, t_vector3 vec_dir);
 // double					distance_cmp(t_vector3 origine, t_vector3 destination);
 t_vector3					normalize_vector(t_vector3);
 double						norme(t_vector3 v);
+t_vector3					do_rotate(double rot[3][3], t_vector3 p);
 t_vector3					vec_dir(t_vector3 origine, t_vector3 destination);
 t_vector3					vec_dir_distance_normalized(t_vector3 origine, t_vector3 destination);
 // utils_angles.c
@@ -156,5 +193,9 @@ void						SetObjectId(t_scene_object *Obj, int Id);
 char						*GetObjectName(t_scene_object *Obj);
 char						*GetObjectType(t_scene_object *Obj);
 int							GetObjectId(t_scene_object *Obj);
+
+// utils_color.c
+t_rgb						hex_to_rgb(int hex_color);
+int							rgb_to_hex(t_rgb rgb_color);
 
 #endif
