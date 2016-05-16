@@ -192,7 +192,7 @@ void init_var(t_rt *rt) // Definir scene.
 	// --- LIGHT
 	//pos = set_vec3(-1.5, 5.0, 2.0);
 	pos = set_vec3(-4.0, 5.0, 2.0);
-	add_light_to_scene(rt, pos, 1.0, 10.0);
+	add_light_to_scene(rt, pos, 1.0, 16.0);
 
 	// --- SPHERES 
 	

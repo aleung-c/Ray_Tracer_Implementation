@@ -15,13 +15,17 @@ NAME = RTv1
 HEADER = RTv1.h
 
 SRC = RTv1.c \
+view_plane.c \
 sphere_check.c \
 plane_check.c \
+cylinder_check.c \
+cone_check.c \
 add_obj_to_scene.c \
 add_light_to_scene.c \
 utils_vec.c \
 utils_angles.c \
 utils_objects.c \
+utils_colors.c \
 vp_vec_touch.c \
 shadows.c \
 shadows_inner.c
