@@ -159,14 +159,17 @@ int							cone_check_touch(t_scene_object *obj, t_light *cur_light,
 
 
 void						add_obj_to_scene_list(t_rt *rt, t_scene_object *obj_to_add);
-
 void						add_touch_to_vp_vec(t_screen_vec *vp_vec, t_scene_object *obj,
 													t_vector3 origine, t_vector3 touch_point);
 t_scene_object				*get_closest_object(t_screen_vec *vp_vec);
 
+// SHADOWS entry.
 void						calculate_casted_shadows(t_rt *rt);
 void						run_trough_lights_shadows(t_rt *rt, t_screen_vec *vp_vector);
 void						check_is_in_shadow(t_rt *rt, t_screen_vec *vp_vector, t_light *cur_light);
+int							check_is_in_shadow_type_filtering (t_scene_object *tmp, 
+											t_screen_vec *vp_vector, t_light *cur_light);
+int							darken_color(int hex_target_color, int divisor);
 
 void						calculate_inner_shadows(t_rt *rt);
 void						run_trough_lights_inner_shadows(t_rt *rt, t_screen_vec *vp_vector);
