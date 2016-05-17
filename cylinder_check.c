@@ -17,9 +17,10 @@ void cylinder_check(t_screen_vec *vp_vec, t_scene_object *obj, t_vector3 origine
 				t_vector3 vec_dir)
 {
 	t_cylinder_algo		algo;
+	t_vector3			vec_dir_normalized;
 
 	// apply cylinder rotation
-	vec_dir = normalize_vector(vec_dir);
+	vec_dir_normalized = normalize_vector(vec_dir);
 	algo.vec_rotated = do_rotate(obj->cylinder_obj->rot, vec_dir);
 	algo.origine_rotated = do_rotate(obj->cylinder_obj->rot, origine);
 	algo_touching_cylinder(&algo, obj, algo.origine_rotated, algo.vec_rotated);
@@ -51,11 +52,9 @@ void	algo_cylinder_touched(t_cylinder_algo *algo, t_vector3 origine,
 {
 	double			ret;
 	double			ret2;
-	t_vector3		vec_dir_normalized;
 
 	ret = (-algo->b + sqrt(algo->det)) / (2.0 * algo->a);
 	ret2 = (-algo->b - sqrt(algo->det)) / (2.0 * algo->a);
-	vec_dir_normalized = normalize_vector(vec_dir);
 	
 	algo->t = (ret2 > 0.0001 ? ret2 : ret);
 	algo->tpoint.x = origine.x + algo->t * vec_dir.x;

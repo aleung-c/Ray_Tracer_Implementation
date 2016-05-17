@@ -47,14 +47,18 @@ void		init_scene3(t_rt *rt)
 	t_vector3	pos;
 	t_vector3	normale;
 
-	rt->has_casted_shadows = 0;
+	rt->has_casted_shadows = 1;
 	// Light
-	pos = set_vec3(2.0, 1.0, 1.0);
-	add_light_to_scene(rt, pos, 1.0, 7.0);
+	pos = set_vec3(2.0, 1.0, 2.0);
+	add_light_to_scene(rt, pos, 1.0, 15.0);
 
 	// Adding cone
 	pos = set_vec3(0.0, 4.0, 1.0);
 	add_cone_to_scene(rt, pos, 0.5, 0xFFCC33); // cone jaune
+
+	// Adding cylinder
+	//pos = set_vec3(-2.0, 7.0, 1.0);
+	//add_cylinder_to_scene(rt, pos, 1.0, 0xFF9966); // cylindre peche
 
 	// adding plane //
 	normale = set_vec3(0.0, 0.0, 1.0);

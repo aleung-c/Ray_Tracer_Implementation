@@ -114,12 +114,25 @@ int	check_is_in_shadow_type_filtering (t_scene_object *tmp,
 	}
 	if (tmp->type == CONE)
 	{
-		if (cone_check_touch(tmp, cur_light, vp_vector) == 1)
+		if (tmp != vp_vector->touched_objs_list->touched_obj)
 		{
-			vp_vector->touched_objs_list->display_color =
-				darken_color(vp_vector->touched_objs_list->display_color, 2);
-			return (1);
+			if (cone_check_touch(tmp, cur_light, vp_vector) == 1)
+			{
+				vp_vector->touched_objs_list->display_color =
+					darken_color(vp_vector->touched_objs_list->display_color, 2);
+				return (1);
+			}
 		}
+		else // shadowing the same object;
+		{
+			if (cone_check_touch2(tmp, cur_light, vp_vector) == 1)
+			{
+				vp_vector->touched_objs_list->display_color =
+					darken_color(vp_vector->touched_objs_list->display_color, 2);
+				return (1);
+			}
+		}
+
 	}
 	return (0);
 }

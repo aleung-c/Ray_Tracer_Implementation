@@ -28,7 +28,7 @@ void	cone_check(t_screen_vec *vp_vec, t_scene_object *obj,
 	
 	algo_touching_cone(&algo, obj, algo.origine_rotated, algo.vec_rotated);
 
-	if (algo.det > 0.1E-7) // epsilon (?)
+	if (algo.det >= 0.0) // epsilon (?)
 	{
 		algo_cone_touched(&algo, algo.origine_rotated, algo.vec_rotated);
 		add_touch_to_vp_vec(vp_vec, obj, algo.origine_rotated, algo.tpoint);
@@ -84,22 +84,23 @@ int cone_check_touch(t_scene_object *obj, t_light *cur_light, t_screen_vec *vp_v
 	double				dist_to_light;
 	double				dist_to_obj;
 	t_vector3			vec;
-	//t_vector3			vec_normalized;
-	//t_vector3			vec_rotated_normalized;
+	t_vector3			vec_normalized;
+	t_vector3			vec_rotated_normalized;
 
 	vec = vec_dir(vp_vector->touched_objs_list->point, cur_light->pos);
-	//vec_normalized = normalize_vector(vec);
+	vec_normalized = normalize_vector(vec);
 
 	algo.vec_rotated = do_rotate(obj->cone_obj->rot, vec);
-	//vec_rotated_normalized = do_rotate(obj->cone_obj->rot, vec_normalized);
+	vec_rotated_normalized = do_rotate(obj->cone_obj->rot, vec_normalized);
 	algo.origine_rotated = do_rotate(obj->cone_obj->rot, vp_vector->touched_objs_list->point);
 	
-	algo_touching_cone(&algo, obj, algo.origine_rotated, algo.vec_rotated);
-	if (algo.det > 0.1E-7)
+	algo_touching_cone(&algo, obj, algo.origine_rotated, vec_rotated_normalized);
+	if (algo.det > 0.0)
 	{
 		algo_cone_touched(&algo, algo.origine_rotated, algo.vec_rotated);
 		dist_to_light = distance(algo.origine_rotated, cur_light->pos);
 		dist_to_obj = distance(algo.origine_rotated, algo.tpoint);
+		
 		if (dist_to_obj < dist_to_light)
 		{
 			return (1);
@@ -127,8 +128,9 @@ int cone_check_touch2(t_scene_object *obj, t_light *cur_light, t_screen_vec *vp_
 	algo.vec_rotated = do_rotate(obj->cone_obj->rot, vec);
 	vec_rotated_normalized = do_rotate(obj->cone_obj->rot, vec_normalized);
 	algo.origine_rotated = do_rotate(obj->cone_obj->rot, vp_vector->touched_objs_list->point);
-	algo_touching_cone(&algo, obj, algo.origine_rotated, algo.vec_rotated);
-	if (algo.det > 0.1E-7)
+
+	algo_touching_cone(&algo, obj, algo.origine_rotated, vec_rotated_normalized);
+	if (algo.det > 0.0)
 	{
 		algo_cone_touched(&algo, algo.origine_rotated, algo.vec_rotated);
 		dist_to_light = distance(algo.origine_rotated, cur_light->pos);
