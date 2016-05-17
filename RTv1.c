@@ -167,108 +167,7 @@ int		expose_hook(t_rt *rt)
 
 
 
-void init_var(t_rt *rt) // Definir scene.
-{
-	t_vector3 pos;
-	t_vector3 normale;
-	// defining screen var //
-	rt->screen_height = SCREEN_H;
-	rt->screen_width = SCREEN_W;
 
-	rt->vp_vectors = malloc(sizeof(t_screen_vec) * (rt->screen_height * rt->screen_width)); // allocation viewplane vectors.
-
-	// defining main cam var //
-	rt->camera.type = CAM;
-	rt->camera.camera_obj = (t_camera *)malloc(sizeof(t_camera));
-	rt->camera.camera_obj->pos.x = 0.0;
-	rt->camera.camera_obj->pos.y = 0.0;
-	rt->camera.camera_obj->pos.z = 1.0;
-	rt->camera.camera_obj->euler_angles.x = 0.0;
-	rt->camera.camera_obj->euler_angles.y = 0.0;
-	rt->camera.camera_obj->euler_angles.z = 0.0;
-
-	rt->camera.camera_obj->dist_cam_screen = 1.0;
-
-	// --- LIGHT
-	//pos = set_vec3(-1.5, 5.0, 2.0);
-	pos = set_vec3(-4.0, 5.0, 2.0);
-	add_light_to_scene(rt, pos, 1.0, 16.0);
-
-	// --- SPHERES 
-	
-	// adding sphere //
-	//pos = set_vec3(0.5, 5.0, 0.4);
-	//add_sphere_to_scene(rt, pos, 0.2, 0x006600); // sphere verte
-	
-	// adding sphere //
-	pos = set_vec3(1.0, 5.0, 2.0);
-	add_sphere_to_scene(rt, pos, 1.0, 0x0066FF); // sphere bleu
-	SetObjectId(rt->last_added_obj, 1);
-
-	// adding sphere //
-	pos = set_vec3(-1.0, 5.0, 2.0);
-	add_sphere_to_scene(rt, pos, 0.5, 0x660000); // sphere rouge
-	SetObjectId(rt->last_added_obj, 2);
-	// --- PLANES //
-	
-	// adding plane //
-	normale = set_vec3(0.0, 0.0, 1.0);
-	pos = set_vec3(0.0, 0.0, 0.0);
-	add_plane_to_scene(rt, pos, normale, 0x669999); // plan vert
-	SetObjectId(rt->last_added_obj, 3);
-	
-	// adding plane //
-	normale = set_vec3(1.0, 0.0, 0.0);
-	pos = set_vec3(2.0, 6.0, 0.0);
-	add_plane_to_scene(rt, pos, normale, 0x6699FF); // plan bleu
-	SetObjectId(rt->last_added_obj, 4);
-
-	// adding plane //
-	normale = set_vec3(0.0, 1.0, 0.0);
-	pos = set_vec3(0.0, 10.0, 0.0);
-	add_plane_to_scene(rt, pos, normale, 0x663366); // plan violet
-	SetObjectId(rt->last_added_obj, 5);
-
-	// adding cylinder
-	pos = set_vec3(4.0, 5.0, 2.0);
-	add_cylinder_to_scene(rt, pos, 0.5, 0xFF9966); // cylindre peche
-	SetObjectId(rt->last_added_obj, 6);
-
-	// adding cone
-	pos = set_vec3(2.5, 5.0, 2.0);
-	add_cone_to_scene(rt, pos, 0.2, 0xCC9900); // cone jaune
-	SetObjectId(rt->last_added_obj, 7);
-
-
-	// DEBUG ---------- //
-	// OBJ DEBUG
-	t_scene_object *tmp;
-	int i;
-
-	i = 0;
-	tmp = rt->scene_objs;
-	while (tmp) {
-		i++;
-		if (tmp->type == SPHERE) {
-			printf("Add sphere to scene \n");
-		}
-		tmp = tmp->next;
-	}
-	printf("Scene :\n");
-	printf("Nombre d'objets : %d \n", i);
-	// LIGHT DEBUG
-	t_light *tmp_light;
-
-	i = 0;
-	tmp_light = rt->scene_lights;
-	while (tmp_light) {
-		i++;
-		tmp_light = tmp_light->next;
-	}
-	printf("Nombre de lights : %d \n", i);
-
-	// DEBUG End --------- //
-}
 
 void init_mlx(t_rt *rt)
 {
@@ -280,11 +179,13 @@ void init_mlx(t_rt *rt)
 	rt->imgv = mlx_new_image(rt->mlx, rt->screen_width, rt->screen_height);
 	rt->img = mlx_get_data_addr(rt->imgv, &rt->bpp, &rt->sizeline, &rt->endian);
 
-	// Raytracing once;
+	// Raytrace once;
 	trace_black_screen(rt);
 	raytrace_objs(rt);
-	calculate_inner_shadows(rt);
-	calculate_casted_shadows(rt); // casted overrides inner.
+	if (rt->has_inner_shadows == 1)
+		calculate_inner_shadows(rt);
+	if (rt->has_casted_shadows == 1)
+		calculate_casted_shadows(rt); // casted overrides inner.
 //	ft_trace_rt(rt);
 
 	mlx_expose_hook(rt->win, expose_hook, rt);
@@ -295,19 +196,29 @@ void init_mlx(t_rt *rt)
 	mlx_destroy_image(rt->mlx, rt->imgv);
 }
 
-void RTv1()
+void RTv1(int scene_number)
 {
 	t_rt rt;
 	rt.scene_objs = NULL; // init list chainee d'objs.
 	rt.scene_lights = NULL;
-	init_var(&rt);
+	rt.scene_number = scene_number;
+	init_entry(&rt);
 	calculate_viewplane(&rt);
 	//rotate_viewplane(&rt); //  Optionnel : ne fonctionne pas ....
 	init_mlx(&rt);
 }
 
-int main(void)
+int main(int argc, char **argv)
 {
-	RTv1();
+	if (argc == 2 && (ft_strlen(argv[1]) == 1) 
+		&& (argv[1][0] >= '1' && argv[1][0] <= '7'))
+	{
+		RTv1(ft_atoi(argv[1]));
+	}
+	else
+	{
+		ft_putendl ("Usage: ./RTv1 [1-7]");
+		return (-1);
+	}
 	return (0);
 }

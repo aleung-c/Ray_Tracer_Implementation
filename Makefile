@@ -15,6 +15,9 @@ NAME = RTv1
 HEADER = RTv1.h
 
 SRC = RTv1.c \
+init_entry.c \
+init_scene_definition.c \
+init_scene_definition2.c \
 view_plane.c \
 sphere_check.c \
 plane_check.c \

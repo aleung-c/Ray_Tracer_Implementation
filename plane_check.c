@@ -17,10 +17,11 @@ void plane_check(t_screen_vec *vp_vec, t_scene_object *obj,
 					t_vector3 origine, t_vector3 vec_dir)
 {
 	t_plane_algo	algo;
+	t_vector3		vec_normalized;
 
-	vec_dir = normalize_vector(vec_dir);
+	vec_normalized = normalize_vector(vec_dir);
 	algo_touching_plane(&algo, obj, origine, vec_dir);
-	if (algo.t >= 0.0)
+	if (algo.t > 0.0)
 	{
 		// touche le plan.
 		// calcul du point touché.
@@ -57,9 +58,11 @@ int plane_check_touch(t_scene_object *obj, t_light *cur_light,
 	double				dist_to_light;
 	double				dist_to_obj;
 	t_vector3			vec_direction;
+	t_vector3			vec_normalized;
 
-	vec_direction = vec_dir_distance_normalized(
+	vec_direction = vec_dir(
 		vp_vector->touched_objs_list->point, cur_light->pos);
+	vec_normalized = normalize_vector(vec_direction);
 	algo_touching_plane(&algo, obj,
 		vp_vector->touched_objs_list->point, vec_direction);
 	if (algo.t > 0.0)

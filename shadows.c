@@ -73,13 +73,25 @@ void check_is_in_shadow(t_rt *rt, t_screen_vec *vp_vector, t_light *cur_light)
 int	check_is_in_shadow_type_filtering (t_scene_object *tmp, 
 					t_screen_vec *vp_vector, t_light *cur_light)
 {
-	if (tmp->type == SPHERE && tmp != vp_vector->touched_objs_list->touched_obj)
+	if (tmp->type == SPHERE)
 	{
-		if (sphere_check_touch(tmp, cur_light, vp_vector) == 1)
+		if (tmp != vp_vector->touched_objs_list->touched_obj)
 		{
-			vp_vector->touched_objs_list->display_color =
-				darken_color(vp_vector->touched_objs_list->display_color, 3);
-			return (1);
+			if (sphere_check_touch(tmp, cur_light, vp_vector) == 1)
+			{
+				vp_vector->touched_objs_list->display_color =
+					darken_color(vp_vector->touched_objs_list->display_color, 2);
+				return (1);
+			}
+		}
+		else // shadowing the same object;
+		{
+			if (sphere_check_touch2(tmp, cur_light, vp_vector) == 1)
+			{
+				vp_vector->touched_objs_list->display_color =
+					darken_color(vp_vector->touched_objs_list->display_color, 2);
+				return (1);
+			}
 		}
 	}
 	if (tmp->type == PLANE && tmp != vp_vector->touched_objs_list->touched_obj)
@@ -87,7 +99,7 @@ int	check_is_in_shadow_type_filtering (t_scene_object *tmp,
 		if (plane_check_touch(tmp, cur_light, vp_vector) == 1)
 		{
 			vp_vector->touched_objs_list->display_color =
-				darken_color(vp_vector->touched_objs_list->display_color, 3);
+				darken_color(vp_vector->touched_objs_list->display_color, 2);
 			return (1);
 		}
 	}
@@ -96,16 +108,16 @@ int	check_is_in_shadow_type_filtering (t_scene_object *tmp,
 		if (cylinder_check_touch(tmp, cur_light, vp_vector) == 1)
 		{
 			vp_vector->touched_objs_list->display_color =
-				darken_color(vp_vector->touched_objs_list->display_color, 3);
+				darken_color(vp_vector->touched_objs_list->display_color, 2);
 			return (1);
 		}
 	}
-	if (tmp->type == CONE && tmp != vp_vector->touched_objs_list->touched_obj)
+	if (tmp->type == CONE)
 	{
 		if (cone_check_touch(tmp, cur_light, vp_vector) == 1)
 		{
 			vp_vector->touched_objs_list->display_color =
-				darken_color(vp_vector->touched_objs_list->display_color, 3);
+				darken_color(vp_vector->touched_objs_list->display_color, 2);
 			return (1);
 		}
 	}

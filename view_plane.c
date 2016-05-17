@@ -55,9 +55,9 @@ void calculate_viewplane(t_rt *rt)
 	vecdir_cam_screen_y = sqrt(vecdir_cam_screen_y);
 
 
-	rt->vp_upleft_pos.x = rt->camera.camera_obj->pos.x - 1.0;
+	rt->vp_upleft_pos.x = rt->camera.camera_obj->pos.x - (rt->screen_width_ratio / 2.0);
 	rt->vp_upleft_pos.y = rt->camera.camera_obj->pos.y + rt->camera.camera_obj->dist_cam_screen;
-	rt->vp_upleft_pos.z = rt->camera.camera_obj->pos.z + 1.0;
+	rt->vp_upleft_pos.z = rt->camera.camera_obj->pos.z + (rt->screen_height_ratio / 2.0);
 
 
 	// CHECK LOGS //
@@ -76,8 +76,8 @@ void calculate_viewplane(t_rt *rt)
 	y = 0;
 	x = 1;
 	i = 1;
-	inc_x = 2.0 / (float)rt->screen_width;
-	inc_z = 2.0 / (float)rt->screen_height;
+	inc_x = rt->screen_width_ratio / (float)rt->screen_width;
+	inc_z = rt->screen_height_ratio / (float)rt->screen_height;
 	xref = rt->vp_upleft_pos.x;
 	yref = rt->vp_upleft_pos.y;
 	zref = rt->vp_upleft_pos.z;

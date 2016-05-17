@@ -74,6 +74,16 @@ typedef struct				s_rt
 	// Ecran //
 	int						screen_width;
 	int						screen_height;
+	double					screen_width_ratio;
+	double					screen_height_ratio;
+
+	// scene datas
+	int 					scene_number;
+
+	// scene settings
+	int 					has_casted_shadows;
+	int 					has_inner_shadows;
+	int 					has_shining;
 
 	// main objs
 	t_scene_object			camera;
@@ -109,6 +119,21 @@ typedef struct				s_rgb
 }							t_rgb;
 
 // protos
+void						RTv1(int scene_number);
+
+// entry
+void						init_entry(t_rt *rt);
+void						init_screen_values(t_rt *rt);
+void						init_camera(t_rt *rt);
+
+// scene definitions
+void						init_scene1(t_rt *rt);
+void						init_scene2(t_rt *rt);
+void						init_scene3(t_rt *rt);
+void						init_scene4(t_rt *rt);
+void						init_scene5(t_rt *rt);
+void						init_scene6(t_rt *rt);
+void						init_scene7(t_rt *rt);
 
 void						calculate_viewplane(t_rt *rt);
 
@@ -119,6 +144,7 @@ void						add_light_to_scene(t_rt *rt, t_vector3 pos, double intensity, double l
 void						add_sphere_to_scene(t_rt *rt, t_vector3 centre, double radius, int color);
 void						sphere_check(t_screen_vec *vp_vec, t_scene_object *obj, t_vector3 origine, t_vector3 vec_dir);
 int							sphere_check_touch(t_scene_object *obj, t_light *cur_light, t_screen_vec *vp_vector);
+int							sphere_check_touch2(t_scene_object *obj, t_light *cur_light, t_screen_vec *vp_vector);
 void						algo_touching_sphere(t_sphere_algo *algo, t_scene_object *obj,
 													t_vector3 origine, t_vector3 vec_dir);
 void						algo_sphere_touched(t_sphere_algo *algo, t_vector3 origine, t_vector3 vec_dir);
@@ -154,6 +180,8 @@ void						algo_touching_cone(t_cone_algo *algo, t_scene_object *obj,
 void						algo_cone_touched(t_cone_algo *algo, t_vector3 origine,
 												t_vector3 vec_dir);
 int							cone_check_touch(t_scene_object *obj, t_light *cur_light, 
+												t_screen_vec *vp_vector);
+int							cone_check_touch2(t_scene_object *obj, t_light *cur_light,
 												t_screen_vec *vp_vector);
 
 
