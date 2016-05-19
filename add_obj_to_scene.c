@@ -11,8 +11,6 @@
 /* ************************************************************************** */
 
 #include "RTv1.h"
-#include <stdio.h> //
-
 
 void add_sphere_to_scene(t_rt *rt, t_vector3 centre, double radius, int color)
 {
@@ -48,7 +46,7 @@ void add_plane_to_scene(t_rt *rt, t_vector3 point, t_vector3 normale, int color)
 }
 
 
-void add_cylinder_to_scene(t_rt *rt, t_vector3 point, double radius, int color)
+void add_cylinder_to_scene(t_rt *rt, t_vector3 point, t_vector3 normale, double radius, int color)
 {
 	t_scene_object	*new_obj;
 
@@ -57,17 +55,16 @@ void add_cylinder_to_scene(t_rt *rt, t_vector3 point, double radius, int color)
 	// Alloue et set les vals.
 	new_obj->type = CYLINDER;
 	new_obj->color = color;
-	new_obj->cylinder_obj = (t_cylinder *)malloc(sizeof(t_cylinder)); // alloue l'obj.
+	new_obj->cylinder_obj = (t_cylinder *)malloc(sizeof(t_cylinder));
 	new_obj->cylinder_obj->pos = point;
 	new_obj->cylinder_obj->radius = radius;
-	new_obj->cylinder_obj->rot[0][0] = 1;
-	new_obj->cylinder_obj->rot[1][1] = 1;
-	new_obj->cylinder_obj->rot[2][2] = 1;
+	new_obj->cylinder_obj->normale = normale;
+	set_cylinder_rotation(new_obj, normale);
 	rt->last_added_obj = new_obj;
 	add_obj_to_scene_list(rt, new_obj);
 }
 
-void add_cone_to_scene(t_rt *rt, t_vector3 point, double angle, int color)
+void add_cone_to_scene(t_rt *rt, t_vector3 point, t_vector3				normale, double angle, int color)
 {
 	t_scene_object	*new_obj;
 
@@ -79,9 +76,8 @@ void add_cone_to_scene(t_rt *rt, t_vector3 point, double angle, int color)
 	new_obj->cone_obj = (t_cone *)malloc(sizeof(t_cone)); // alloue l'obj.
 	new_obj->cone_obj->pos = point;
 	new_obj->cone_obj->angle = angle;
-	new_obj->cone_obj->rot[0][0] = 1;
-	new_obj->cone_obj->rot[1][1] = 1;
-	new_obj->cone_obj->rot[2][2] = 1;
+	new_obj->cone_obj->normale = normale;
+	set_cone_rotation(new_obj, normale);
 	rt->last_added_obj = new_obj;
 	add_obj_to_scene_list(rt, new_obj);
 }

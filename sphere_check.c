@@ -120,6 +120,8 @@ int		sphere_check_touch2(t_scene_object *obj, t_light *cur_light, t_screen_vec *
 	t_vector3			vec_normalized;
 	t_vector3			sc_tpoint;
 
+	
+
 	sc_tpoint = vp_vector->touched_objs_list->point;
 	vec_direction = vec_dir(sc_tpoint, cur_light->pos);
 	vec_normalized = normalize_vector(vec_direction);

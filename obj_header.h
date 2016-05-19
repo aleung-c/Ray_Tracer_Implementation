@@ -90,6 +90,7 @@ typedef	struct				s_plane_algo {
 typedef struct				s_cylinder {
 	t_vector3				pos;
 	double					radius;
+	t_vector3				normale;
 	double					rot[3][3];
 }							t_cylinder;
 
@@ -113,6 +114,7 @@ typedef	struct				s_cylinder_algo {
 typedef struct				s_cone {
 	t_vector3				pos;
 	double					angle;
+	t_vector3				normale;
 	double					rot[3][3];
 }							t_cone;
 

@@ -24,6 +24,7 @@
 # define SCREEN_H 720
 # define TOTAL_PX SCREEN_W * SCREEN_H
 # define VEC_OBJ_LIMIT 10
+# define RAD(x) ((x / 180.0) * M_PI)
 
 // struct d'un objet.
 typedef struct				s_scene_object {
@@ -82,6 +83,7 @@ typedef struct				s_rt
 
 	// scene settings
 	int 					has_casted_shadows;
+	int 					has_casted_shadows_on_self;
 	int 					has_inner_shadows;
 	int 					has_shining;
 
@@ -138,6 +140,9 @@ void						init_scene7(t_rt *rt);
 void						calculate_viewplane(t_rt *rt);
 
 t_scene_object				*clean_obj(t_scene_object	*new_obj);
+void						set_cone_rotation(t_scene_object *new_obj, t_vector3 normale);
+void						set_cylinder_rotation(t_scene_object *new_obj, t_vector3 normale);
+
 void						add_light_to_scene(t_rt *rt, t_vector3 pos, double intensity, double light_power_distance);
 
 
@@ -161,7 +166,7 @@ int							plane_check_touch(t_scene_object *obj, t_light *cur_light,
 												t_screen_vec *vp_vector);
 
 
-void						add_cylinder_to_scene(t_rt *rt, t_vector3 point, double radius, int color);
+void						add_cylinder_to_scene(t_rt *rt, t_vector3 point, t_vector3 normale, double radius, int color);
 void						cylinder_check(t_screen_vec *vp_vec, t_scene_object *obj, t_vector3 origine,
 											t_vector3 vec_dir);
 void						algo_touching_cylinder(t_cylinder_algo *algo, t_scene_object *obj,
@@ -172,7 +177,7 @@ int							cylinder_check_touch(t_scene_object *obj, t_light *cur_light,
 													t_screen_vec *vp_vector);
 
 
-void						add_cone_to_scene(t_rt *rt, t_vector3 point, double angle, int color);
+void						add_cone_to_scene(t_rt *rt, t_vector3 point, t_vector3 normale, double angle, int color);
 void						cone_check(t_screen_vec *vp_vec, t_scene_object *obj,
 										t_vector3 origine, t_vector3 vec_dir);
 void						algo_touching_cone(t_cone_algo *algo, t_scene_object *obj,
@@ -196,7 +201,7 @@ void						calculate_casted_shadows(t_rt *rt);
 void						run_trough_lights_shadows(t_rt *rt, t_screen_vec *vp_vector);
 void						check_is_in_shadow(t_rt *rt, t_screen_vec *vp_vector, t_light *cur_light);
 int							check_is_in_shadow_type_filtering (t_scene_object *tmp, 
-											t_screen_vec *vp_vector, t_light *cur_light);
+								t_screen_vec *vp_vector, t_light *cur_light, int has_self_shadows);
 int							darken_color(int hex_target_color, int divisor);
 
 void						calculate_inner_shadows(t_rt *rt);
@@ -206,17 +211,27 @@ void						run_trough_lights_inner_shadows(t_rt *rt, t_screen_vec *vp_vector);
 // utils_vec.c
 t_vector3					set_vec3(double x, double y, double z);
 double						distance(t_vector3 origine, t_vector3 destination);
+t_vector3					translate(t_vector3 p, t_vector3 v);
 double						vector_length(t_vector3 vec_dir);
 t_vector3					point_from_vecdir(t_vector3 origine, t_vector3 vec_dir);
-// double					distance_cmp(t_vector3 origine, t_vector3 destination);
 t_vector3					normalize_vector(t_vector3);
 double						norme(t_vector3 v);
-t_vector3					do_rotate(double rot[3][3], t_vector3 p);
+
 t_vector3					vec_dir(t_vector3 origine, t_vector3 destination);
 t_vector3					vec_dir_distance_normalized(t_vector3 origine, t_vector3 destination);
+void						create_vertical_norm(t_vector3 *norm);
+t_vector3					vec_hand_swap(t_vector3 v);
+
+// utils_rotation.c
+t_vector3					vector(t_vector3 a, t_vector3 b);
+t_vector3					do_rotate(double rot[3][3], t_vector3 p);
+void						get_rotate(t_vector3 axe, double cos, double rot[3][3]);
+void						get_rotate_angle(t_vector3 axe, double angle, double rot[3][3]);
+
 // utils_angles.c
 double						angle_check(double angle);
 int							angle_rev(int angle);
+double						scalar(t_vector3 a, t_vector3 b);
 
 // utils_obj.c
 void						SetObjectName(t_scene_object *Obj, char *Str);

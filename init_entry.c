@@ -19,6 +19,7 @@ void init_entry(t_rt *rt)
 
 	// Default settings
 	rt->has_casted_shadows = 1;
+	rt->has_casted_shadows_on_self = 1;
 	rt->has_inner_shadows = 1;
 	rt->has_shining = 0;
 	
@@ -52,7 +53,6 @@ void init_entry(t_rt *rt)
 		pos = set_vec3(-1.0, 5.0, 2.0);
 		add_sphere_to_scene(rt, pos, 2.0, 0x0066FF); // sphere bleu
 		SetObjectId(rt->last_added_obj, 1);
-
 		
 		// --- PLANES //
 		

@@ -17,10 +17,10 @@ void cylinder_check(t_screen_vec *vp_vec, t_scene_object *obj, t_vector3 origine
 				t_vector3 vec_dir)
 {
 	t_cylinder_algo		algo;
-	t_vector3			vec_dir_normalized;
+	//t_vector3			vec_dir_normalized;
 
 	// apply cylinder rotation
-	vec_dir_normalized = normalize_vector(vec_dir);
+	//vec_dir_normalized = normalize_vector(vec_dir);
 	algo.vec_rotated = do_rotate(obj->cylinder_obj->rot, vec_dir);
 	algo.origine_rotated = do_rotate(obj->cylinder_obj->rot, origine);
 	algo_touching_cylinder(&algo, obj, algo.origine_rotated, algo.vec_rotated);
@@ -69,17 +69,29 @@ int cylinder_check_touch(t_scene_object *obj, t_light *cur_light, t_screen_vec *
 	double				dist_to_obj;
 	t_vector3			vec;
 
-	vec = vec_dir_distance_normalized(vp_vector->touched_objs_list->point, cur_light->pos);
+	t_vector3			point_displacement;
+	t_vector3			vec_point_to_cam_normalized;
+
+	// displace inter point closer to screen
+	point_displacement = vp_vector->touched_objs_list->point;
+
+	vec_point_to_cam_normalized = normalize_vector(vp_vector->v);
+	point_displacement.x += -(vec_point_to_cam_normalized.x) * 1.2;
+	point_displacement.y += -(vec_point_to_cam_normalized.y) * 1.2;
+	point_displacement.z += -(vec_point_to_cam_normalized.z) * 1.2;
+	
+
+	vec = vec_dir_distance_normalized(point_displacement, cur_light->pos);
 	// apply cylinder rotation
 	algo.vec_rotated = do_rotate(obj->cylinder_obj->rot, vec);
-	algo.origine_rotated = do_rotate(obj->cylinder_obj->rot, vp_vector->touched_objs_list->point);
+	algo.origine_rotated = do_rotate(obj->cylinder_obj->rot, point_displacement);
 	algo_touching_cylinder(&algo, obj, algo.origine_rotated, algo.vec_rotated);
 	if (algo.det > 0.0)
 	{
 		algo_cylinder_touched(&algo, algo.origine_rotated, algo.vec_rotated);
 		dist_to_light = distance(algo.origine_rotated, cur_light->pos);
 		dist_to_obj = distance(algo.origine_rotated, algo.tpoint);
-		if (dist_to_obj <= dist_to_light)
+		if (dist_to_obj < dist_to_light)
 		{
 			return (1);
 		}

@@ -54,21 +54,15 @@ void		run_trough_lights_inner_shadows(t_rt *rt, t_screen_vec *vp_vector)
 			{
 				normalized_distance_to_light = 
 					distance_to_light / cur_light->light_power_distance;
-				//printf("%f\n", normalized_distance_to_light);
-				// jusqu'ici, ok !
-				// conversion couleur hexa en rgb;
-				obj_color = vp_vector->touched_objs_list->color;
-				//printf("%#08x\n", obj_color); 
-				rgb_color.r = (((obj_color >> 16) & 0xFF));
-				rgb_color.g = (((obj_color >> 8) & 0xFF));
-				rgb_color.b = (((obj_color) & 0xFF));
 
-				//printf("%dr %dg %db\n", rgb_color.r, rgb_color.g, rgb_color.b);
+				obj_color = vp_vector->touched_objs_list->color;
+				rgb_color = hex_to_rgb(obj_color);
+
 				color_incval_precise = (normalized_distance_to_light) * 255.0;
 				color_incval = (int)floor(color_incval_precise);
 				//printf("inc color %d\n", color_incval);
 				// add color;
-				rgb_color.r -= color_incval;
+				rgb_color.r -= color_incval_precise;
 				rgb_color.g -= color_incval;
 				rgb_color.b -= color_incval;
 
@@ -84,26 +78,7 @@ void		run_trough_lights_inner_shadows(t_rt *rt, t_screen_vec *vp_vector)
 				{
 					rgb_color.b = 0;
 				}
-
-				/*if (rgb_color.r > 255) 
-				{
-					rgb_color.r = 255;
-				}
-				if (rgb_color.g > 255) 
-				{
-					rgb_color.g = 255;
-				}
-				if (rgb_color.b > 255) 
-				{
-					rgb_color.b = 255;
-				}*/
-				//printf("%dr %dg %db\n", rgb_color.r, rgb_color.g, rgb_color.b);
-
-				// set color
-				color_to_set = 
-				((rgb_color.r & 0xff) << 16) +
-				((rgb_color.g & 0xff) << 8) +
-				(rgb_color.b & 0xff);
+				color_to_set = rgb_to_hex(rgb_color);
 			}
 			else
 			{

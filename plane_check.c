@@ -34,22 +34,22 @@ void algo_touching_plane (t_plane_algo *algo, t_scene_object *obj,
 							t_vector3 origine, t_vector3 vec_dir)
 {
 	// calculations pour trouver touched point.
-	/*algo->t = -(((obj->plane_obj->normale.x * origine.x)
+	algo->t = -(((obj->plane_obj->normale.x * origine.x)
 			+ (obj->plane_obj->normale.z * origine.z)
 			+ (obj->plane_obj->normale.y * origine.y)
 			+ obj->plane_obj->point.y)
 			/ ((obj->plane_obj->normale.x * vec_dir.x)
 			+ (obj->plane_obj->normale.z * vec_dir.z)
-			+ -(obj->plane_obj->normale.y * vec_dir.y)));*/
+			+ -(obj->plane_obj->normale.y * vec_dir.y)));
 
-	algo->t = 
+	/*algo->t = 
 		-(((obj->plane_obj->normale.x * origine.x)
 		+ (obj->plane_obj->normale.y * origine.y)
 		+ (obj->plane_obj->normale.z * origine.z)
 		+ obj->plane_obj->point.y)
 		/ ((obj->plane_obj->normale.x * vec_dir.x) 
 		+ (obj->plane_obj->normale.y * vec_dir.y)
-		+ (obj->plane_obj->normale.z * vec_dir.z)));
+		+ (obj->plane_obj->normale.z * vec_dir.z)));*/
 }
 
 void algo_plane_touched(t_plane_algo *algo, t_vector3 origine,
@@ -73,7 +73,7 @@ int plane_check_touch(t_scene_object *obj, t_light *cur_light,
 		vp_vector->touched_objs_list->point, cur_light->pos);
 	vec_normalized = normalize_vector(vec_direction);
 	algo_touching_plane(&algo, obj,
-		vp_vector->touched_objs_list->point, vec_normalized);
+		vp_vector->touched_objs_list->point, vec_direction);
 	if (algo.t > 0.0)
 	{
 		algo_plane_touched(&algo, vp_vector->touched_objs_list->point,

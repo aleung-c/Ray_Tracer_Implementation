@@ -94,18 +94,29 @@ double	norme(t_vector3 v)
 	return (sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z)));
 }
 
-t_vector3	do_rotate(double rot[3][3], t_vector3 p)
+void	create_vertical_norm(t_vector3 *norm)
+{
+	norm->x = 0;
+	norm->y = 0;
+	norm->z = 1;
+}
+
+t_vector3	vec_hand_swap(t_vector3 v)
 {
 	t_vector3	ret;
-	double	x;
-	double	y;
-	double	z;
 
-	x = p.x;
-	y = p.y;
-	z = p.z;
-	ret.x = x * rot[0][0] + y * rot[0][1] + z * rot[0][2];
-	ret.y = x * rot[1][0] + y * rot[1][1] + z * rot[1][2];
-	ret.z = x * rot[2][0] + y * rot[2][1] + z * rot[2][2];
+	ret.x = v.x;
+	ret.y = v.z;
+	ret.z = v.y;
+	return (ret);
+}
+
+t_vector3		translate(t_vector3 p, t_vector3 v)
+{
+	t_vector3		ret;
+
+	ret.x = p.x + v.x;
+	ret.y = p.y + v.y;
+	ret.z = p.z + v.z;
 	return (ret);
 }

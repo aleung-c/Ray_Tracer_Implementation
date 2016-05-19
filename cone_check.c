@@ -84,17 +84,21 @@ int cone_check_touch(t_scene_object *obj, t_light *cur_light, t_screen_vec *vp_v
 	double				dist_to_light;
 	double				dist_to_obj;
 	t_vector3			vec;
-	t_vector3			vec_normalized;
-	t_vector3			vec_rotated_normalized;
+	//t_vector3			vec_normalized;
+	//t_vector3			vec_rotated_normalized;
 
-	vec = vec_dir(vp_vector->touched_objs_list->point, cur_light->pos);
-	vec_normalized = normalize_vector(vec);
+	t_vector3			point_displacement;
+
+	// displace inter point closer to screen
+	point_displacement = vp_vector->touched_objs_list->point;
+	vec = vec_dir(point_displacement, cur_light->pos);
+	// vec_normalized = normalize_vector(vec);
 
 	algo.vec_rotated = do_rotate(obj->cone_obj->rot, vec);
-	vec_rotated_normalized = do_rotate(obj->cone_obj->rot, vec_normalized);
-	algo.origine_rotated = do_rotate(obj->cone_obj->rot, vp_vector->touched_objs_list->point);
+	// vec_rotated_normalized = do_rotate(obj->cone_obj->rot, vec_normalized);
+	algo.origine_rotated = do_rotate(obj->cone_obj->rot, point_displacement);
 	
-	algo_touching_cone(&algo, obj, algo.origine_rotated, vec_rotated_normalized);
+	algo_touching_cone(&algo, obj, algo.origine_rotated, algo.vec_rotated);
 	if (algo.det > 0.0)
 	{
 		algo_cone_touched(&algo, algo.origine_rotated, algo.vec_rotated);

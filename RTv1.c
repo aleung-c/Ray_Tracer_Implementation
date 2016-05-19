@@ -211,13 +211,13 @@ void RTv1(int scene_number)
 int main(int argc, char **argv)
 {
 	if (argc == 2 && (ft_strlen(argv[1]) == 1) 
-		&& (argv[1][0] >= '1' && argv[1][0] <= '7'))
+		&& (argv[1][0] >= '1' && argv[1][0] <= '6'))
 	{
 		RTv1(ft_atoi(argv[1]));
 	}
 	else
 	{
-		ft_putendl ("Usage: ./RTv1 [1-7]");
+		ft_putendl ("Usage: ./RTv1 [1-6]");
 		return (-1);
 	}
 	return (0);

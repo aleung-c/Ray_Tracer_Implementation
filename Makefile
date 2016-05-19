@@ -24,9 +24,12 @@ plane_check.c \
 cylinder_check.c \
 cone_check.c \
 add_obj_to_scene.c \
+cylinder_rotation.c \
+cone_rotation.c \
 add_light_to_scene.c \
 utils_vec.c \
 utils_angles.c \
+utils_rotation.c \
 utils_objects.c \
 utils_colors.c \
 vp_vec_touch.c \

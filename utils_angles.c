@@ -30,3 +30,8 @@ int		angle_rev(int angle)
 		angle_rev = angle_rev - 360.0;
 	return (angle_rev);
 }
+
+double	scalar(t_vector3 a, t_vector3 b)
+{
+	return (a.x * b.x + a.y * b.y + a.z * b.z);
+}

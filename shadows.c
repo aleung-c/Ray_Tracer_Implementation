@@ -64,14 +64,14 @@ void check_is_in_shadow(t_rt *rt, t_screen_vec *vp_vector, t_light *cur_light)
 	// parcourir tous les objs.
 	while (tmp)
 	{
-		if (check_is_in_shadow_type_filtering(tmp, vp_vector, cur_light) == 1)
+		if (check_is_in_shadow_type_filtering(tmp, vp_vector, cur_light, rt->has_casted_shadows_on_self) == 1)
 			return ; // stops it when found one shadow to merge them.
 		tmp = tmp->next;
 	}
 }
 
 int	check_is_in_shadow_type_filtering (t_scene_object *tmp, 
-					t_screen_vec *vp_vector, t_light *cur_light)
+		t_screen_vec *vp_vector, t_light *cur_light, int has_self_shadows)
 {
 	if (tmp->type == SPHERE)
 	{
@@ -84,7 +84,7 @@ int	check_is_in_shadow_type_filtering (t_scene_object *tmp,
 				return (1);
 			}
 		}
-		else // shadowing the same object;
+		else if (has_self_shadows == 1) // shadowing the same object;
 		{
 			if (sphere_check_touch2(tmp, cur_light, vp_vector) == 1)
 			{
@@ -123,7 +123,7 @@ int	check_is_in_shadow_type_filtering (t_scene_object *tmp,
 				return (1);
 			}
 		}
-		else // shadowing the same object;
+		else if (has_self_shadows == 1)  // shadowing the same object;
 		{
 			if (cone_check_touch2(tmp, cur_light, vp_vector) == 1)
 			{
