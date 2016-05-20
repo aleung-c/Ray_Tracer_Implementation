@@ -33,3 +33,19 @@ int		rgb_to_hex(t_rgb rgb_color)
 		(rgb_color.b & 0xff);
 	return (ret);
 }
+
+void		check_limit_darkening(t_rgb *rgb_color)
+{
+	if (rgb_color->r < 0) 
+	{
+		rgb_color->r = 0;
+	}
+	if (rgb_color->g < 0) 
+	{
+		rgb_color->g = 0;
+	}
+	if (rgb_color->b < 0) 
+	{
+		rgb_color->b = 0;
+	}
+}

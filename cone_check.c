@@ -28,7 +28,7 @@ void	cone_check(t_screen_vec *vp_vec, t_scene_object *obj,
 	
 	algo_touching_cone(&algo, obj, algo.origine_rotated, algo.vec_rotated);
 
-	if (algo.det >= 0.0) // epsilon (?)
+	if (algo.det > 0.0) // epsilon (?)
 	{
 		algo_cone_touched(&algo, algo.origine_rotated, algo.vec_rotated);
 		add_touch_to_vp_vec(vp_vec, obj, algo.origine_rotated, algo.tpoint);
@@ -78,7 +78,7 @@ void	algo_cone_touched(t_cone_algo *algo, t_vector3 origine,
 	algo->tpoint.z = origine.z + algo->t * vec_dir.z;
 }
 
-int cone_check_touch(t_scene_object *obj, t_light *cur_light, t_screen_vec *vp_vector)
+int		cone_check_touch(t_scene_object *obj, t_light *cur_light, t_screen_vec *vp_vector)
 {
 	t_cone_algo			algo;
 	double				dist_to_light;
@@ -117,7 +117,7 @@ int cone_check_touch(t_scene_object *obj, t_light *cur_light, t_screen_vec *vp_v
 	return (0);
 }
 
-int cone_check_touch2(t_scene_object *obj, t_light *cur_light, t_screen_vec *vp_vector)
+int		cone_check_touch2(t_scene_object *obj, t_light *cur_light, t_screen_vec *vp_vector)
 {
 	t_cone_algo			algo;
 	double				dist_to_light;

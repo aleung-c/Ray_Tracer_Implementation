@@ -33,6 +33,7 @@ utils_rotation.c \
 utils_objects.c \
 utils_colors.c \
 vp_vec_touch.c \
+get_normale.c \
 shadows.c \
 shadows_inner.c
 

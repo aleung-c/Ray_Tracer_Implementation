@@ -72,6 +72,8 @@ void		init_scene4(t_rt *rt)
 
 	rt->has_casted_shadows = 0;
 	rt->has_casted_shadows_on_self = 0;
+	rt->has_inner_shadows = 1;
+
 	// Light
 	pos = set_vec3(1.0, 1.0, 2.0);
 	add_light_to_scene(rt, pos, 1.0, 15.0);

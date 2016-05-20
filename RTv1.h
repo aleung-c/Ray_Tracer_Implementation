@@ -48,6 +48,7 @@ typedef struct				s_touch
 	t_scene_object			*touched_obj;
 	t_vector3				point;
 	double					distance;
+	t_vector3				obj_inter_normale;
 	int						color;
 	int 					display_color;
 	struct s_touch			*next;
@@ -195,6 +196,10 @@ void						add_obj_to_scene_list(t_rt *rt, t_scene_object *obj_to_add);
 void						add_touch_to_vp_vec(t_screen_vec *vp_vec, t_scene_object *obj,
 													t_vector3 origine, t_vector3 touch_point);
 t_scene_object				*get_closest_object(t_screen_vec *vp_vec);
+t_vector3					get_normale(t_scene_object *obj, t_vector3 inter_point);
+t_vector3					get_cylinder_norm(t_scene_object *obj, t_vector3 inter_point);
+t_vector3					get_cone_norm(t_scene_object *obj, t_vector3 inter_point);
+t_vector3					get_sphere_norm(t_scene_object *obj, t_vector3 inter_point);
 
 // SHADOWS entry.
 void						calculate_casted_shadows(t_rt *rt);
@@ -206,7 +211,8 @@ int							darken_color(int hex_target_color, int divisor);
 
 void						calculate_inner_shadows(t_rt *rt);
 void						run_trough_lights_inner_shadows(t_rt *rt, t_screen_vec *vp_vector);
-
+int							set_inner_color_from_dist(t_light *cur_light, t_screen_vec *vp_vector);
+int							set_inner_color_from_normale(t_light *cur_light, t_screen_vec *vp_vector);
 // utils
 // utils_vec.c
 t_vector3					set_vec3(double x, double y, double z);
@@ -243,5 +249,7 @@ int							GetObjectId(t_scene_object *Obj);
 // utils_color.c
 t_rgb						hex_to_rgb(int hex_color);
 int							rgb_to_hex(t_rgb rgb_color);
+void						check_limit_darkening(t_rgb *rgb_color);
+
 
 #endif
