@@ -35,7 +35,8 @@ utils_colors.c \
 vp_vec_touch.c \
 get_normale.c \
 shadows.c \
-shadows_inner.c
+shadows_inner.c \
+shining.c
 
 OBJ = $(SRC:.c=.o)
 

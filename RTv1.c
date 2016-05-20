@@ -102,19 +102,15 @@ void run_trough_objs(t_rt *rt, t_screen_vec *vp_vector)
 	}
 }
 
-void raytrace_objs(t_rt *rt) // pour calculer tous les objs
+void raytrace_objs(t_rt *rt)
 {
 	rt->scan_x = 0;
 	rt->scan_y = 0;
 	rt->i = 0;
-	//color = 0x000000; // base color = black;
-	while (rt->scan_y < rt->screen_height) // pour chaque colonne.
+	while (rt->scan_y < rt->screen_height)
 	{
-		while (rt->scan_x < rt->screen_width) // pour chaque ligne de pixel.
+		while (rt->scan_x < rt->screen_width)
 		{
-			// fait le check du vec actuel pour chaque obj de la scene en fonction de son type.
-			// vecteur actuel == rt->vp_vectors[i]
-			// pour chaque obj, regarder le type, puis lenvoyer pour calculer dans l'algo correspondant.
 			run_trough_objs(rt, &(rt->vp_vectors[rt->i]));
 			rt->scan_x++;
 			rt->i++;
@@ -129,12 +125,12 @@ void display_rt(t_rt *rt)
 	rt->scan_x = 0;
 	rt->scan_y = 0;
 	rt->i = 0;
-	while (rt->scan_y < rt->screen_height) // pour chaque colonne.
+	while (rt->scan_y < rt->screen_height)
 	{
-		while (rt->scan_x < rt->screen_width) // pour chaque ligne de pixel.
+		while (rt->scan_x < rt->screen_width)
 		{
-			if (rt->vp_vectors[rt->i].touched_objs_list == NULL) {
-				// no touch, put black; -> crash security;
+			if (rt->vp_vectors[rt->i].touched_objs_list == NULL)
+			{
 				pixel_put_to_image(rt, rt->scan_x, rt->scan_y, 0x000000);
 			}
 			else
@@ -152,7 +148,7 @@ void display_rt(t_rt *rt)
 
 int ft_trace_rt(t_rt *rt)
 {	
-	display_rt(rt); // parcours les vec et affiche les colors.
+	display_rt(rt);
 	return (0);
 }
 
@@ -164,10 +160,6 @@ int		expose_hook(t_rt *rt)
 	mlx_put_image_to_window(rt->mlx, rt->win, rt->imgv, 0, 0);
 	return (ret);
 }
-
-
-
-
 
 void init_mlx(t_rt *rt)
 {
@@ -184,9 +176,11 @@ void init_mlx(t_rt *rt)
 	raytrace_objs(rt);
 	if (rt->has_inner_shadows == 1)
 		calculate_inner_shadows(rt);
+	if (rt->has_shining == 1)
+		calcultate_shining(rt);
 	if (rt->has_casted_shadows == 1)
-		calculate_casted_shadows(rt); // casted overrides inner.
-//	ft_trace_rt(rt);
+		calculate_casted_shadows(rt);
+
 
 	mlx_expose_hook(rt->win, expose_hook, rt);
 	//mlx_hook(rt->win, 2, (1L<<0), &key_press, rt); // ????? ne semble pas marcher.
@@ -211,13 +205,13 @@ void RTv1(int scene_number)
 int main(int argc, char **argv)
 {
 	if (argc == 2 && (ft_strlen(argv[1]) == 1) 
-		&& (argv[1][0] >= '1' && argv[1][0] <= '6'))
+		&& (argv[1][0] >= '1' && argv[1][0] <= '7'))
 	{
 		RTv1(ft_atoi(argv[1]));
 	}
 	else
 	{
-		ft_putendl ("Usage: ./RTv1 [1-6]");
+		ft_putendl ("Usage: ./RTv1 [1-7]");
 		return (-1);
 	}
 	return (0);

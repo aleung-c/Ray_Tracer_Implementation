@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "RTv1.h"
-#include <stdio.h> //
 
 void add_touch_to_vp_vec(t_screen_vec *vp_vec, t_scene_object *obj,
 							t_vector3 origine, t_vector3 touch_point)
@@ -21,17 +20,13 @@ void add_touch_to_vp_vec(t_screen_vec *vp_vec, t_scene_object *obj,
 
 	new_touch = (t_touch *)malloc(sizeof(t_touch)); // alloue le maillon.
 	new_touch->next = NULL;
-	// alloue et set les vals.
 	new_touch->touched_obj = obj;
 	new_touch->point = touch_point;
 	new_touch->color = obj->color;
 	new_touch->display_color = obj->color;
 	new_touch->obj_inter_normale = get_normale(new_touch->touched_obj, touch_point);
 	new_touch->distance = distance(origine, touch_point);
-	//printf("distance : %.4f \n", new_touch->distance);
-
-	// add maillon to list;
-	if (vp_vec->touched_objs_list == NULL) // si liste null;
+	if (vp_vec->touched_objs_list == NULL)
 	{
 		vp_vec->touched_objs_list = new_touch;
 		return ;
@@ -39,14 +34,12 @@ void add_touch_to_vp_vec(t_screen_vec *vp_vec, t_scene_object *obj,
 	else
 	{
 		tmp = vp_vec->touched_objs_list;
-		// si new obj est plus pres que lelem1 de la liste, new obj est le prems elem.
 		if (new_touch->distance < tmp->distance)
 		{
 			vp_vec->touched_objs_list = new_touch;
 			new_touch->next = tmp;
 			return ;
 		}
-		//sinon, new obj go en fin de liste.
 		while (tmp->next)
 			tmp = tmp->next;
 		tmp->next = new_touch;
@@ -60,7 +53,7 @@ t_scene_object *get_closest_object(t_screen_vec *vp_vec)
 	t_touch *closest;
 
 	closest = NULL;
-	if (vp_vec->touched_objs_list == NULL) // si liste null;
+	if (vp_vec->touched_objs_list == NULL)
 			return (NULL);
 	else
 	{
@@ -69,10 +62,7 @@ t_scene_object *get_closest_object(t_screen_vec *vp_vec)
 		while (tmp)
 		{
 			if (tmp->distance < closest->distance)
-			{
-				closest = tmp; // elem actuel = closest, restart tri.
-				//tmp = vp_vec->touched_objs_list;
-			}
+				closest = tmp;
 			tmp = tmp->next;
 		}
 		return (closest->touched_obj);

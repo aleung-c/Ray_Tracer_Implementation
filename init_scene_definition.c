@@ -53,6 +53,7 @@ void		init_scene3(t_rt *rt)
 	// Light
 	pos = set_vec3(2.0, 1.0, 2.0);
 	add_light_to_scene(rt, pos, 1.0, 15.0);
+//	add_sphere_to_scene(rt, pos, 0.01, 0xFF0000); // sphere rouge
 
 	// Adding cone
 	normale = set_vec3(0.0, 0.0, 1.0);

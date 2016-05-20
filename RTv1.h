@@ -33,7 +33,7 @@ typedef struct				s_scene_object {
 	t_obj_type				type;
 	int						color;
 
-	t_camera				*camera_obj; // il n y aura qu'un sc_obj camera.
+	t_camera				*camera_obj;
 	t_sphere				*sphere_obj;
 	t_plane					*plane_obj;
 	t_cylinder				*cylinder_obj;
@@ -98,15 +98,15 @@ typedef struct				s_rt
 	t_vector3				vp_upleft_pos;
 	t_vector3				vp_right_pos;
 
-	t_vector3				vp_pos; // pas utilise.
+	t_vector3				vp_pos;
 
-	t_screen_vec			*vp_vectors; // total px.
+	t_screen_vec			*vp_vectors;
 
 	// OBJECTS
-	t_scene_object			*scene_objs; // liste chainee d'obj.
+	t_scene_object			*scene_objs;
 
 	// Reusable Vars
-	t_scene_object			*tmp; // to access objects;
+	t_scene_object			*tmp;
 	int						scan_x;
 	int						scan_y;
 	int						i;
@@ -114,12 +114,50 @@ typedef struct				s_rt
 	t_scene_object			*last_added_obj;
 }							t_rt;
 
+// une color
 typedef struct				s_rgb 
 {
 	int						r;
 	int						g;
 	int						b;
 }							t_rgb;
+
+// pour stock variables
+typedef struct				s_inner_shadow_calcs
+{
+	int						obj_color;
+	t_rgb					rgb_color;
+	int						color_to_set;
+	double					diffval_vecs;
+	double					vec_angle;
+	int						color_incval_precise;
+	int						color_incval;
+	t_vector3				inter_to_light;
+	t_vector3				inter_to_obj_normale;
+	double					distance_to_light;
+	double					normalized_distance_to_light;
+}							t_inner_shadow_calcs;
+
+typedef struct				s_casted_shadow_calcs
+{
+	double					dist_to_light;
+	double					dist_to_obj;
+	t_vector3				inter_to_light;
+	t_vector3				inter_to_obj_normale;
+	double					vec_angle;
+}							t_casted_shadow_calcs;
+
+typedef struct				s_shining_calcs
+{
+	int						obj_color;
+	t_rgb					rgb_color;
+	int						color_to_set;
+	double					vec_angle;
+	int						color_incval_precise;
+	int						color_incval;
+	t_vector3				inter_to_light;
+	t_vector3				inter_to_obj_normale;
+}							t_shining_calcs;
 
 // protos
 void						RTv1(int scene_number);
@@ -150,7 +188,6 @@ void						add_light_to_scene(t_rt *rt, t_vector3 pos, double intensity, double l
 void						add_sphere_to_scene(t_rt *rt, t_vector3 centre, double radius, int color);
 void						sphere_check(t_screen_vec *vp_vec, t_scene_object *obj, t_vector3 origine, t_vector3 vec_dir);
 int							sphere_check_touch(t_scene_object *obj, t_light *cur_light, t_screen_vec *vp_vector);
-int							sphere_check_touch2(t_scene_object *obj, t_light *cur_light, t_screen_vec *vp_vector);
 void						algo_touching_sphere(t_sphere_algo *algo, t_scene_object *obj,
 													t_vector3 origine, t_vector3 vec_dir);
 void						algo_sphere_touched(t_sphere_algo *algo, t_vector3 origine, t_vector3 vec_dir);
@@ -187,9 +224,6 @@ void						algo_cone_touched(t_cone_algo *algo, t_vector3 origine,
 												t_vector3 vec_dir);
 int							cone_check_touch(t_scene_object *obj, t_light *cur_light, 
 												t_screen_vec *vp_vector);
-int							cone_check_touch2(t_scene_object *obj, t_light *cur_light,
-												t_screen_vec *vp_vector);
-
 
 
 void						add_obj_to_scene_list(t_rt *rt, t_scene_object *obj_to_add);
@@ -206,13 +240,21 @@ void						calculate_casted_shadows(t_rt *rt);
 void						run_trough_lights_shadows(t_rt *rt, t_screen_vec *vp_vector);
 void						check_is_in_shadow(t_rt *rt, t_screen_vec *vp_vector, t_light *cur_light);
 int							check_is_in_shadow_type_filtering (t_scene_object *tmp, 
-								t_screen_vec *vp_vector, t_light *cur_light, int has_self_shadows);
+								t_screen_vec *vp_vector, t_light *cur_light);
 int							darken_color(int hex_target_color, int divisor);
 
 void						calculate_inner_shadows(t_rt *rt);
 void						run_trough_lights_inner_shadows(t_rt *rt, t_screen_vec *vp_vector);
 int							set_inner_color_from_dist(t_light *cur_light, t_screen_vec *vp_vector);
 int							set_inner_color_from_normale(t_light *cur_light, t_screen_vec *vp_vector);
+
+// shining
+void						calcultate_shining(t_rt *rt);
+void						run_trough_lights_shining(t_rt *rt, t_screen_vec *vp_vector);
+int							set_shining_color(t_light *cur_light,
+												t_screen_vec *vp_vector);
+
+
 // utils
 // utils_vec.c
 t_vector3					set_vec3(double x, double y, double z);
@@ -250,6 +292,7 @@ int							GetObjectId(t_scene_object *Obj);
 t_rgb						hex_to_rgb(int hex_color);
 int							rgb_to_hex(t_rgb rgb_color);
 void						check_limit_darkening(t_rgb *rgb_color);
+void						check_limit_brightening(t_rgb *rgb_color);
 
 
 #endif

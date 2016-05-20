@@ -21,7 +21,7 @@ void init_entry(t_rt *rt)
 	rt->has_casted_shadows = 1;
 	rt->has_casted_shadows_on_self = 1;
 	rt->has_inner_shadows = 1;
-	rt->has_shining = 0;
+	rt->has_shining = 1;
 	
 	init_screen_values(rt);
 	init_camera(rt);

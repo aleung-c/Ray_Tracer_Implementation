@@ -101,6 +101,8 @@ typedef	struct				s_cylinder_algo {
 
 	double					det; // determinant du calcul effectué, pour trouver surface de la sphere.
 	double					t; //  calcul pour trouver la position du point sur la sphere par rapport au ray lancé.
+	
+	double					cyl_radius;
 	double					dist;
 
 	t_vector3				vec_rotated;
