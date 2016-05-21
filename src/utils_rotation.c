@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "RTv1.h"
+#include "../includes/rtv1.h"
 
 t_vector3	vector(t_vector3 a, t_vector3 b)
 {
@@ -24,10 +24,10 @@ t_vector3	vector(t_vector3 a, t_vector3 b)
 
 t_vector3	do_rotate(double rot[3][3], t_vector3 p)
 {
-	t_vector3	ret;
-	double	x;
-	double	y;
-	double	z;
+	t_vector3		ret;
+	double			x;
+	double			y;
+	double			z;
 
 	x = p.x;
 	y = p.y;

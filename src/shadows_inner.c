@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "RTv1.h"
+#include "../includes/rtv1.h"
 
 void		calculate_inner_shadows(t_rt *rt)
 {
@@ -74,9 +74,7 @@ int			set_inner_color_from_dist(t_light *cur_light,
 		algo.color_to_set = rgb_to_hex(algo.rgb_color);
 	}
 	else
-	{
 		algo.color_to_set = 0x000000;
-	}
 	return (algo.color_to_set);
 }
 

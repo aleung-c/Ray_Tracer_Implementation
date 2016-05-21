@@ -12,7 +12,7 @@
 
 #include "libft.h"
 
-char *ft_strsecjoin(char const *s1, char const *s2)
+char	*ft_strsecjoin(char const *s1, char const *s2)
 {
 	char	*temp;
 

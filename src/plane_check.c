@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "RTv1.h"
+#include "../includes/rtv1.h"
 
 void	plane_check(t_screen_vec *vp_vec, t_scene_object *obj,
 					t_vector3 origine, t_vector3 vec_dir)

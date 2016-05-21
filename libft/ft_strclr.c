@@ -12,7 +12,7 @@
 
 #include "libft.h"
 
-void ft_strclr(char *s)
+void	ft_strclr(char *s)
 {
 	int len;
 	int i;

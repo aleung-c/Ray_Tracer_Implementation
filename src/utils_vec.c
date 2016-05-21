@@ -10,9 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "RTv1.h"
+#include "../includes/rtv1.h"
 
-t_vector3 set_vec3(double x, double y, double z)
+t_vector3		set_vec3(double x, double y, double z)
 {
 	t_vector3 ret;
 
@@ -22,9 +22,8 @@ t_vector3 set_vec3(double x, double y, double z)
 	return (ret);
 }
 
-t_vector3	point_from_vecdir(t_vector3 origine, t_vector3 vec_dir)
+t_vector3		point_from_vecdir(t_vector3 origine, t_vector3 vec_dir)
 {
-	// return le point origine + vecdir. Utile pour les limites.
 	t_vector3	ret_point;
 
 	ret_point.x = origine.x + vec_dir.x;
@@ -33,9 +32,8 @@ t_vector3	point_from_vecdir(t_vector3 origine, t_vector3 vec_dir)
 	return (ret_point);
 }
 
-t_vector3 vec_dir(t_vector3 origine, t_vector3 destination)
+t_vector3		vec_dir(t_vector3 origine, t_vector3 destination)
 {
-	// return le vecteur de directions entre les deux points.
 	t_vector3 distance;
 
 	distance.x = destination.x - origine.x;
@@ -44,7 +42,7 @@ t_vector3 vec_dir(t_vector3 origine, t_vector3 destination)
 	return (distance);
 }
 
-double vector_length(t_vector3 vec_dir)
+double			vector_length(t_vector3 vec_dir)
 {
 	double ret;
 
@@ -52,71 +50,14 @@ double vector_length(t_vector3 vec_dir)
 	return (ret);
 }
 
-t_vector3 vec_dir_distance_normalized(t_vector3 origine, t_vector3 destination)
+t_vector3		vec_dir_distance_normalized(t_vector3 origine,
+										t_vector3 destination)
 {
-	// return un vec de direction avec distance normalisée;
 	t_vector3		ret;
 
 	ret.x = destination.x - origine.x;
 	ret.y = destination.y - origine.y;
 	ret.z = destination.z - origine.z;
 	ret = normalize_vector(ret);
-	return (ret);
-}
-
-double distance(t_vector3 origine, t_vector3 destination)
-{
-	// return une val de distance pour comparaison;
-	double		ret;
-
-	ret = sqrt(
-		pow(destination.x - origine.x, 2.0) +
-		pow(destination.y - origine.y, 2.0) +
-		pow(destination.z - origine.z, 2.0));
-	return (ret);
-}
-
-t_vector3 normalize_vector(t_vector3 v)
-{
-	// normalise un vecteur de distance.
-	t_vector3	ret;
-	double	normal;
-
-	normal = norme(v);
-	ret.x = v.x / normal;
-	ret.y = v.y / normal;
-	ret.z = v.z / normal;
-	return (ret);
-}
-
-double	norme(t_vector3 v)
-{
-	return (sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z)));
-}
-
-void	create_vertical_norm(t_vector3 *norm)
-{
-	norm->x = 0;
-	norm->y = 0;
-	norm->z = 1;
-}
-
-t_vector3	vec_hand_swap(t_vector3 v)
-{
-	t_vector3	ret;
-
-	ret.x = v.x;
-	ret.y = v.z;
-	ret.z = v.y;
-	return (ret);
-}
-
-t_vector3		translate(t_vector3 p, t_vector3 v)
-{
-	t_vector3		ret;
-
-	ret.x = p.x + v.x;
-	ret.y = p.y + v.y;
-	ret.z = p.z + v.z;
 	return (ret);
 }

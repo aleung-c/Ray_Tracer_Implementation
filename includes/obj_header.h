@@ -10,7 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #ifndef OBJ_HEADER_H
 # define OBJ_HEADER_H
 
@@ -26,26 +25,21 @@ typedef enum				e_obj_type
 	NBOBJTYPE
 }							t_obj_type;
 
-// struct dun point dans l'espace a trois coordonnees.
-typedef struct				s_vector3 
+typedef struct				s_vector3
 {
-	double					x; // strafe left right
-	double					y; // go forward.
-	double					z; // altitude.
+	double					x;
+	double					y;
+	double					z;
 
 }							t_vector3;
 
-
-// CAMERA
 typedef struct				s_camera {
 	t_obj_type				type;
-
 	t_vector3				pos;
-	t_vector3				euler_angles; // pour rotation de la camera sur elle-meme.
+	t_vector3				euler_angles;
 	double					dist_cam_screen;
 }							t_camera;
 
-// LIGHT LIST
 typedef struct				s_light {
 	t_vector3				pos;
 	double					intensity;
@@ -53,7 +47,6 @@ typedef struct				s_light {
 	struct s_light			*next;
 }							t_light;
 
-// SPHERE
 typedef struct				s_sphere
 {
 	t_vector3				pos;
@@ -65,16 +58,12 @@ typedef	struct				s_sphere_algo {
 	double					a;
 	double					b;
 	double					c;
-
-	double					det; // determinant du calcul effectué, pour trouver surface de la sphere.
-	double					t; //  calcul pour trouver la position du point sur la sphere par rapport au ray lancé.
+	double					det;
+	double					t;
 	double					dist;
-
-	// point from origin to t.
 	t_vector3				tpoint;
 }							t_sphere_algo;
 
-// PLANE
 typedef struct				s_plane
 {
 	t_vector3				normale;
@@ -86,7 +75,6 @@ typedef	struct				s_plane_algo {
 	t_vector3				tpoint;
 }							t_plane_algo;
 
-// CYLINDER
 typedef struct				s_cylinder {
 	t_vector3				pos;
 	double					radius;
@@ -98,21 +86,15 @@ typedef	struct				s_cylinder_algo {
 	double					a;
 	double					b;
 	double					c;
-
-	double					det; // determinant du calcul effectué, pour trouver surface de la sphere.
-	double					t; //  calcul pour trouver la position du point sur la sphere par rapport au ray lancé.
-	
+	double					det;
+	double					t;
 	double					cyl_radius;
 	double					dist;
-
 	t_vector3				vec_rotated;
 	t_vector3				origine_rotated;
-
-	// point from origin to t.
 	t_vector3				tpoint;
 }							t_cylinder_algo;
 
-// CONE
 typedef struct				s_cone {
 	t_vector3				pos;
 	double					angle;
@@ -124,15 +106,11 @@ typedef struct				s_cone_algo {
 	double					a;
 	double					b;
 	double					c;
-
-	double					det; // determinant du calcul effectué, pour trouver surface de la sphere.
-	double					t; //  calcul pour trouver la position du point sur la sphere par rapport au ray lancé.
+	double					det;
+	double					t;
 	double					dist;
-
 	t_vector3				vec_rotated;
 	t_vector3				origine_rotated;
-
-		// point from origin to t.
 	t_vector3				tpoint;
 }							t_cone_algo;
 

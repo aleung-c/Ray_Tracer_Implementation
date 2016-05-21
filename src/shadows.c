@@ -10,8 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "RTv1.h"
-#include <stdio.h> //
+#include "../includes/rtv1.h"
 
 void		calculate_casted_shadows(t_rt *rt)
 {
@@ -33,7 +32,7 @@ void		calculate_casted_shadows(t_rt *rt)
 		scan_y++;
 		scan_x = 0;
 	}
-} 
+}
 
 void		run_trough_lights_shadows(t_rt *rt, t_screen_vec *vp_vector)
 {
@@ -47,7 +46,8 @@ void		run_trough_lights_shadows(t_rt *rt, t_screen_vec *vp_vector)
 	}
 }
 
-void		check_is_in_shadow(t_rt *rt, t_screen_vec *vp_vector, t_light *cur_light)
+void		check_is_in_shadow(t_rt *rt, t_screen_vec *vp_vector,
+								t_light *cur_light)
 {
 	if (vp_vector->touched_objs_list == NULL)
 	{
@@ -62,59 +62,34 @@ void		check_is_in_shadow(t_rt *rt, t_screen_vec *vp_vector, t_light *cur_light)
 	}
 }
 
-int			check_is_in_shadow_type_filtering (t_scene_object *tmp, 
+int			check_is_in_shadow_type_filtering(t_scene_object *tmp,
 		t_screen_vec *vp_vector, t_light *cur_light)
 {
-	if (tmp->type == SPHERE)
+	if (tmp->type == SPHERE && tmp != vp_vector->touched_objs_list->touched_obj)
 	{
-		if (tmp != vp_vector->touched_objs_list->touched_obj)
-		{
-			if (sphere_check_touch(tmp, cur_light, vp_vector) == 1)
-			{
-				vp_vector->touched_objs_list->display_color =
-					darken_color(vp_vector->touched_objs_list->display_color, 2);
-				return (1);
-			}
-		}
+		return (check_sphere_shadow(tmp, vp_vector, cur_light));
 	}
 	if (tmp->type == PLANE && tmp != vp_vector->touched_objs_list->touched_obj)
 	{
-		if (plane_check_touch(tmp, cur_light, vp_vector) == 1)
-		{
-			vp_vector->touched_objs_list->display_color =
-				darken_color(vp_vector->touched_objs_list->display_color, 2);
-			return (1);
-		}
+		return (check_plane_shadow(tmp, vp_vector, cur_light));
 	}
-	if (tmp->type == CYLINDER && tmp != vp_vector->touched_objs_list->touched_obj)
+	if (tmp->type == CYLINDER && tmp !=
+		vp_vector->touched_objs_list->touched_obj)
 	{
-		if (cylinder_check_touch(tmp, cur_light, vp_vector) == 1)
-		{
-			vp_vector->touched_objs_list->display_color =
-				darken_color(vp_vector->touched_objs_list->display_color, 2);
-			return (1);
-		}
+		return (check_cylinder_shadow(tmp, vp_vector, cur_light));
 	}
-	if (tmp->type == CONE)
+	if (tmp->type == CONE && tmp != vp_vector->touched_objs_list->touched_obj)
 	{
-		if (tmp != vp_vector->touched_objs_list->touched_obj)
-		{
-			if (cone_check_touch(tmp, cur_light, vp_vector) == 1)
-			{
-				vp_vector->touched_objs_list->display_color =
-					darken_color(vp_vector->touched_objs_list->display_color, 2);
-				return (1);
-			}
-		}
+		return (check_cone_shadow(tmp, vp_vector, cur_light));
 	}
 	return (0);
 }
 
-int		darken_color(int hex_target_color, int divisor)
+int			darken_color(int hex_target_color, int divisor)
 {
 	t_rgb				rgb_color;
 
-	if (divisor != 0) 
+	if (divisor != 0)
 	{
 		rgb_color = hex_to_rgb(hex_target_color);
 		rgb_color.r /= divisor;

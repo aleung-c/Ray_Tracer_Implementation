@@ -10,18 +10,18 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "RTv1.h"
+#include "../includes/rtv1.h"
 
-void add_sphere_to_scene(t_rt *rt, t_vector3 centre, double radius, int color)
+void			add_sphere_to_scene(t_rt *rt, t_vector3 centre,
+									double radius, int color)
 {
 	t_scene_object	*new_obj;
 
 	new_obj = NULL;
 	new_obj = clean_obj(new_obj);
-	// alloue et set les vals.
 	new_obj->type = SPHERE;
 	new_obj->color = color;
-	new_obj->sphere_obj = (t_sphere *)malloc(sizeof(t_sphere)); // alloue l'obj.
+	new_obj->sphere_obj = (t_sphere *)malloc(sizeof(t_sphere));
 	new_obj->sphere_obj->pos = centre;
 	new_obj->sphere_obj->radius = radius;
 	new_obj->sphere_obj->diametre = radius * 2.0;
@@ -29,32 +29,30 @@ void add_sphere_to_scene(t_rt *rt, t_vector3 centre, double radius, int color)
 	add_obj_to_scene_list(rt, new_obj);
 }
 
-void add_plane_to_scene(t_rt *rt, t_vector3 point, t_vector3 normale, int color)
+void			add_plane_to_scene(t_rt *rt, t_vector3 point,
+									t_vector3 normale, int color)
 {
 	t_scene_object	*new_obj;
 
 	new_obj = NULL;
 	new_obj = clean_obj(new_obj);
-	// Alloue et set les vals.
 	new_obj->type = PLANE;
 	new_obj->color = color;
-	new_obj->plane_obj = (t_plane *)malloc(sizeof(t_plane)); // alloue l'obj.
+	new_obj->plane_obj = (t_plane *)malloc(sizeof(t_plane));
 	new_obj->plane_obj->point = point;
 	new_obj->plane_obj->normale = normale;
 	rt->last_added_obj = new_obj;
 	add_obj_to_scene_list(rt, new_obj);
 }
 
-
-void add_cylinder_to_scene(t_rt *rt, t_vector3 point, t_vector3 normale, double radius, int color)
+void			add_cylinder_to_scene(t_rt *rt, t_vector3 point,
+						t_vector3 normale, double radius)
 {
 	t_scene_object	*new_obj;
 
 	new_obj = NULL;
 	new_obj = clean_obj(new_obj);
-	// Alloue et set les vals.
 	new_obj->type = CYLINDER;
-	new_obj->color = color;
 	new_obj->cylinder_obj = (t_cylinder *)malloc(sizeof(t_cylinder));
 	new_obj->cylinder_obj->pos = point;
 	new_obj->cylinder_obj->radius = radius;
@@ -64,16 +62,15 @@ void add_cylinder_to_scene(t_rt *rt, t_vector3 point, t_vector3 normale, double 
 	add_obj_to_scene_list(rt, new_obj);
 }
 
-void add_cone_to_scene(t_rt *rt, t_vector3 point, t_vector3				normale, double angle, int color)
+void			add_cone_to_scene(t_rt *rt, t_vector3 point,
+					t_vector3 normale, double angle)
 {
 	t_scene_object	*new_obj;
 
 	new_obj = NULL;
 	new_obj = clean_obj(new_obj);
-	// Alloue et set les vals.
 	new_obj->type = CONE;
-	new_obj->color = color;
-	new_obj->cone_obj = (t_cone *)malloc(sizeof(t_cone)); // alloue l'obj.
+	new_obj->cone_obj = (t_cone *)malloc(sizeof(t_cone));
 	new_obj->cone_obj->pos = point;
 	new_obj->cone_obj->angle = angle;
 	new_obj->cone_obj->normale = normale;
@@ -82,12 +79,12 @@ void add_cone_to_scene(t_rt *rt, t_vector3 point, t_vector3				normale, double a
 	add_obj_to_scene_list(rt, new_obj);
 }
 
-void add_obj_to_scene_list(t_rt *rt, t_scene_object *obj_to_add)
+void			add_obj_to_scene_list(t_rt *rt,
+										t_scene_object *obj_to_add)
 {
 	t_scene_object	*tmp;
 
-	// Add maillon to list;
-	if (rt->scene_objs == NULL) // si liste null;
+	if (rt->scene_objs == NULL)
 	{
 		rt->scene_objs = obj_to_add;
 		return ;
@@ -100,15 +97,4 @@ void add_obj_to_scene_list(t_rt *rt, t_scene_object *obj_to_add)
 		tmp->next = obj_to_add;
 		return ;
 	}
-}
-
-t_scene_object	*clean_obj(t_scene_object	*new_obj)
-{
-	new_obj = (t_scene_object *)malloc(sizeof(t_scene_object));
-	new_obj->next = NULL;
-	new_obj->sphere_obj = NULL;
-	new_obj->plane_obj = NULL;
-	new_obj->cylinder_obj = NULL;
-	new_obj->cone_obj = NULL;
-	return (new_obj);
 }

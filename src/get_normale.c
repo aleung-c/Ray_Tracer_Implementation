@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "RTv1.h"
+#include "../includes/rtv1.h"
 
 t_vector3	get_cylinder_norm(t_scene_object *obj, t_vector3 inter_point)
 {
@@ -24,10 +24,10 @@ t_vector3	get_cylinder_norm(t_scene_object *obj, t_vector3 inter_point)
 
 t_vector3	get_cone_norm(t_scene_object *obj, t_vector3 inter_point)
 {
-	float	x;
-	float	y;
-	float	z;
-	float	size;
+	float		x;
+	float		y;
+	float		z;
+	float		size;
 	t_vector3	vec;
 
 	x = inter_point.x - obj->cone_obj->pos.x;
@@ -54,17 +54,17 @@ t_vector3	get_normale(t_scene_object *obj, t_vector3 inter_point)
 	normale_ret.z = 0.0;
 	if (obj->type == SPHERE)
 	{
-		normale_ret	= get_sphere_norm(obj, inter_point);
+		normale_ret = get_sphere_norm(obj, inter_point);
 		return (normale_ret);
 	}
 	else if (obj->type == CYLINDER)
 	{
-		normale_ret	= get_cylinder_norm(obj, inter_point);
+		normale_ret = get_cylinder_norm(obj, inter_point);
 		return (normale_ret);
 	}
 	else if (obj->type == CONE)
 	{
-		normale_ret	= get_cone_norm(obj, inter_point);
+		normale_ret = get_cone_norm(obj, inter_point);
 		return (normale_ret);
 	}
 	return (normale_ret);

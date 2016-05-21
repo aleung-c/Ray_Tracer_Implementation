@@ -10,12 +10,12 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "RTv1.h"
+#include "../includes/rtv1.h"
 
 void	sphere_check(t_screen_vec *vp_vec, t_scene_object *obj,
 						t_vector3 origine, t_vector3 vec)
 {
-	t_sphere_algo		algo; // contient toutes les val pour calculer.
+	t_sphere_algo		algo;
 
 	algo_touching_sphere(&algo, obj, origine, vec);
 	if (algo.det > 0.0)
@@ -26,12 +26,12 @@ void	sphere_check(t_screen_vec *vp_vec, t_scene_object *obj,
 }
 
 void	algo_touching_sphere(t_sphere_algo *algo, t_scene_object *obj,
-							t_vector3 origine, t_vector3 vec_dir)
+								t_vector3 origine, t_vector3 vec_dir)
 {
 	algo->a =
 		pow(vec_dir.x, 2) + pow(vec_dir.y, 2) + pow(vec_dir.z, 2);
 	algo->b =
-		  2.0 * vec_dir.x * (origine.x - obj->sphere_obj->pos.x)
+		2.0 * vec_dir.x * (origine.x - obj->sphere_obj->pos.x)
 		+ 2.0 * vec_dir.y * (origine.y - obj->sphere_obj->pos.y)
 		+ 2.0 * vec_dir.z * (origine.z - obj->sphere_obj->pos.z);
 	algo->c =
@@ -51,10 +51,10 @@ void	algo_touching_sphere(t_sphere_algo *algo, t_scene_object *obj,
 }
 
 void	algo_sphere_touched(t_sphere_algo *algo, t_vector3 origine,
-							t_vector3 vec_dir)
+								t_vector3 vec_dir)
 {
-	double	ret;
-	double	ret2;
+	double				ret;
+	double				ret2;
 
 	ret = (-algo->b + sqrt(algo->det)) / (2.0 * algo->a);
 	ret2 = (-algo->b - sqrt(algo->det)) / (2.0 * algo->a);
@@ -64,31 +64,30 @@ void	algo_sphere_touched(t_sphere_algo *algo, t_vector3 origine,
 	algo->tpoint.z = origine.z + algo->t * vec_dir.z;
 }
 
-int		sphere_check_touch(t_scene_object *obj, t_light *cur_light, t_screen_vec *vp_vector)
+int		sphere_check_touch(t_scene_object *obj, t_light *cur_light,
+							t_screen_vec *vp_vector)
 {
-	t_sphere_algo		algo; // contient toutes les val pour calculer.
-	
+	t_sphere_algo		algo;
 	double				dist_to_light;
 	double				dist_to_obj;
 	t_vector3			vec_direction;
 
-	vec_direction = vec_dir(vp_vector->touched_objs_list->point, cur_light->pos);
-	algo_touching_sphere(&algo, obj, vp_vector->touched_objs_list->point, vec_direction);
+	vec_direction = vec_dir(vp_vector->touched_objs_list->point,
+								cur_light->pos);
+	algo_touching_sphere(&algo, obj, vp_vector->touched_objs_list->point,
+							vec_direction);
 	if (algo.det > 0.0)
 	{
-		// touche sphere
-		algo_sphere_touched(&algo, vp_vector->touched_objs_list->point, vec_direction);
-
-		dist_to_light = distance(vp_vector->touched_objs_list->point, cur_light->pos);
-		dist_to_obj = distance(vp_vector->touched_objs_list->point, algo.tpoint);
+		algo_sphere_touched(&algo, vp_vector->touched_objs_list->point,
+								vec_direction);
+		dist_to_light = distance(vp_vector->touched_objs_list->point,
+									cur_light->pos);
+		dist_to_obj = distance(vp_vector->touched_objs_list->point,
+								algo.tpoint);
 		if (dist_to_obj < dist_to_light)
-		{
 			return (1);
-		}
 		else
-		{
 			return (0);
-		}
 	}
 	return (0);
 }

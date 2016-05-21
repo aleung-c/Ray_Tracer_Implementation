@@ -10,9 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "RTv1.h"
+#include "../includes/rtv1.h"
 
-void	calcultate_shining(t_rt *rt)
+void		calcultate_shining(t_rt *rt)
 {
 	int i;
 	int screen_size;
@@ -26,7 +26,7 @@ void	calcultate_shining(t_rt *rt)
 	}
 }
 
-void	run_trough_lights_shining(t_rt *rt, t_screen_vec *vp_vector)
+void		run_trough_lights_shining(t_rt *rt, t_screen_vec *vp_vector)
 {
 	t_light		*cur_light;
 	int			color_to_set;
@@ -60,18 +60,19 @@ int			set_shining_color(t_light *cur_light,
 						algo.inter_to_obj_normale));
 	if (algo.vec_angle < 0.2F)
 	{
+		algo.vec_angle = algo.vec_angle / 0.2;
 		algo.obj_color = vp_vector->touched_objs_list->color;
 		algo.rgb_color = hex_to_rgb(algo.obj_color);
-		algo.color_incval_precise = (algo.vec_angle) * 255.0;
-		algo.color_incval = (int)floor(algo.color_incval_precise);
-		algo.rgb_color.r += algo.color_incval;
-		algo.rgb_color.g += algo.color_incval;
-		algo.rgb_color.b += algo.color_incval;
+		algo.rgb_color.r += (1.0 - (algo.vec_angle))
+							* (255.0 - algo.rgb_color.r);
+		algo.rgb_color.g += (1.0 - (algo.vec_angle))
+							* (255.0 - algo.rgb_color.g);
+		algo.rgb_color.b += (1.0 - (algo.vec_angle))
+							* (255.0 - algo.rgb_color.b);
 		check_limit_brightening(&algo.rgb_color);
 		algo.color_to_set = rgb_to_hex(algo.rgb_color);
 	}
 	else
 		algo.color_to_set = vp_vector->touched_objs_list->display_color;
 	return (algo.color_to_set);
-
 }
